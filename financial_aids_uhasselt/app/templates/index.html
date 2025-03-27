@@ -3,7 +3,7 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>
-   Login Page
+   Login or click continue
   </title>
   <script src="https://cdn.tailwindcss.com">
   </script>
@@ -13,24 +13,22 @@
   <div class="flex flex-col items-center">
    <div class="w-full relative">
     <img alt="Students sitting on a bench outside a university building" class="w-full h-96 object-cover" height="400" src="https://storage.googleapis.com/a1aa/image/RMAedMOWS8vEw_uH0HS9WF4Rlg9CFEFigWrtxw2NF1E.jpg" width="1200"/>
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-75 px-4 py-2">
-     <h1 class="text-2xl font-bold">
-      Toegangscontrole - Login Page
-     </h1>
-    </div>
    </div>
+   <h1 class="text-2xl font-bold mt-4 bg-white px-4 py-2 shadow-md">
+    Toegangscontrole - Login Page
+    </h1>
    <div class="w-full max-w-6xl bg-white shadow-md mt-4 p-6 flex flex-col md:flex-row">
     <div class="w-full md:w-1/3 bg-red-500 p-6 text-white">
      <form class="space-y-4">
       <div>
        <label class="block" for="user-id">
-        user-id:
+        User-id:
        </label>
        <input class="w-full p-2 text-black" id="user-id" type="text"/>
       </div>
       <div>
        <label class="block" for="password">
-        password:
+        Password:
        </label>
        <input class="w-full p-2 text-black" id="password" type="password"/>
       </div>
@@ -38,12 +36,9 @@
        Login
       </button>
       <button class="w-full bg-red-700 py-2" type="button">
-       e-id Login
+       Continue as guest
       </button>
      </form>
-     <p class="mt-4">
-      This is a public computer
-     </p>
      <div class="mt-4">
       <a class="text-white underline" href="#">
        Wachtwoord vergeten?
@@ -51,53 +46,45 @@
       <a class="text-white underline ml-2" href="#">
        Forgot your password?
       </a>
-      <a class="text-white underline ml-2" href="#">
-       Account geactiveerd?
-      </a>
-      <a class="text-white underline ml-2" href="#">
-       Activate your account?
-      </a>
      </div>
     </div>
     <div class="w-full md:w-2/3 p-6 space-y-4">
      <div>
       <h2 class="text-red-500 font-bold">
-       VOOR PERSONEEL/STUDENTEN:
+       VOOR GEBRUIKERS/GASTEN:
       </h2>
       <p>
-       Gebruik het user-id en wachtwoord dat je gebruikt om je e-mail te lezen.
+        Indien je wilt inloggen om informatie te kunnen opslaan of op te halen, vul je gegevens in in de voorziene ruimtes.
+      </p>
+      <p>
+       Gebruik het user-id en wachtwoord dat je gebruikt om je e-mail te lezen en vul deze in.
       </p>
       <p>
        Let op dat je je studentenaccount eerst hebt geactiveerd.
       </p>
+      <br></br>
       <p>
-       Opgepast! Je blijft ingelogd voor al deze webtoepassingen tot je je browser volledig afsluit.
-      </p>
-      <p>
-       Voor ondersteuning en problemen kun je de servicedesk contacteren op
-       <a class="text-blue-500 underline" href="https://servicedesk.uhasselt.be">
-        https://servicedesk.uhasselt.be
-       </a>
+       Indien je echter wenst om geen account aan te maken of geen account hebt, kan je ook doorgaan als gast door op de knop Continue as guest te klikken.
       </p>
      </div>
      <div>
       <h2 class="text-red-500 font-bold">
-       FOR STAFF/STUDENTS:
+       FOR USERS/GUESTS:
       </h2>
       <p>
-       Use your user-id and password that you use to read your e-mail.
+        If you would like to log in to save or retrieve information, please fill in your data in the spaces provided.
+      </p>
+      <p>
+       Use your user-id and password that you use to read your e-mail and fill those in.
       </p>
       <p>
        Please first check if you have activated your account.
       </p>
+      <br></br>
       <p>
-       Warning! You will remain logged in for these webapplications until you close the browser completely.
+       However, if you wouldn't like to make an account or don't have an account, you can also continue as guest by clicking on the Continue as guest button.
       </p>
       <p>
-       For support and problems you can contact the servicedesk at
-       <a class="text-blue-500 underline" href="https://servicedesk.uhasselt.be">
-        https://servicedesk.uhasselt.be
-       </a>
       </p>
      </div>
     </div>
