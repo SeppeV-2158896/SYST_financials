@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-gray-200">
+    <div class="flex flex-col items-center p-6">
+        <div class="w-full max-w-6xl bg-white shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-4" id="page-title">Welcome, [User]</h1>
+            <form id="dynamic-form" class="space-y-4">
+                {% for question in questions %}
+                <div>
+                    <label class="block text-gray-700" for="question{{ forloop.counter }}">
+                        {{ question.question_text }}
+                    </label>
+                    <input class="w-full p-2 border border-gray-300" id="question{{ forloop.counter }}" name="question{{ forloop.counter }}" type="text">
+                </div>
+                {% endfor %}
+            </form>
+            <div class="flex justify-between mt-6">
+                <button class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
+                <button class="bg-red-500 text-white py-2 px-4" type="button">Show Overview</button>
+                <button class="bg-red-500 text-white py-2 px-4" type="submit">Submit</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Example script to change the title dynamically
+        document.getElementById('page-title').innerText = `Welcome, ${localStorage.getItem('username') || 'User'}`;
+    </script>
+</body>
+</html>
