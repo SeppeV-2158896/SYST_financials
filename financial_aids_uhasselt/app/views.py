@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 
@@ -9,29 +9,30 @@ def index(request):
     return HttpResponse(template.render({}, request))
 
 def simulate(request):
-    # authenticated = request.user.is_authenticated
-    authenticated = True  # For testing purposes, assume user is authenticated
+    authenticated = request.POST.get('is_authenticated')
     
-    # If user is not authenticated and they are not a guest
-    if not authenticated:
-        if 'guest' in request.GET:
-            # Treat the user as a guest
-            username = None
-        else:
-            # If they are not logged in and not a guest, redirect them to login page
-            return index(request)
+    # Check if the user is authenticated or accessing as a guest
+    if not authenticated and 'guest' not in request.GET:
+        return redirect('index')  # Redirect to the login page if unauthorized
+
+    # Determine user type and set header
+    if authenticated and 'guest' not in request.GET:
+        username = request.POST.get('username')
+        header = f"Welcome {username}"  # Header for authenticated users
     else:
-        # If the user is authenticated, use their username
-        username = request.user.username
-    
+        username = "Guest"
+        header = "Financial Simulation"  # Header for guest users
+
     # Get all questions from the database
     questions = Question.objects.all()
     
+    print(username)
+
     # Pass the user status and questions to the template
     context = {
         'questions': questions,
-        'username': username or 'Guest',  # If username is None, display 'Guest'
-        'is_authenticated': True,
+        'username': username,
+        'header': header,
     }
 
     return render(request, 'account_info.html', context)
