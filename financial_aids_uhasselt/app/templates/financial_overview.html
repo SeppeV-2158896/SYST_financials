@@ -1,0 +1,125 @@
+<!-- filepath: d:\Documents\Syst\SYST_financials\financial_aids_uhasselt\app\templates\financial_overview.html -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-gray-200">
+    <h1 class="text-2xl font-bold mt-4 bg-white px-4 py-2 shadow-md">
+        Financial Overview
+    </h1>
+    <div class="flex flex-col items-center p-6">
+        <div class="w-full max-w-6xl bg-white shadow-md p-6">
+            <!-- Costs Breakdown Section -->
+            <h2 class="text-xl font-bold mb-4">Financial breakdown academic year (2024-2025)</h2>
+            <div class="overflow-x-auto mb-8">
+                <table class="min-w-full border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border border-gray-300 px-4 py-2">Category</th>
+                            <th class="border border-gray-300 px-4 py-2">Amount (€)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-gray-300 px-4 py-2">Income</td>
+                            <td class="border border-gray-300 px-4 py-2">20,000</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 px-4 py-2">Study Expenses - Tuition</td>
+                            <td class="border border-gray-300 px-4 py-2">7,500</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 px-4 py-2">Study Expenses - Books</td>
+                            <td class="border border-gray-300 px-4 py-2">1,500</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 px-4 py-2">Study Expenses - Housing</td>
+                            <td class="border border-gray-300 px-4 py-2">2,500</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 px-4 py-2">Financial Aid - Scholarship</td>
+                            <td class="border border-gray-300 px-4 py-2">2,000</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 px-4 py-2">Financial Aid - Grant</td>
+                            <td class="border border-gray-300 px-4 py-2">1,500</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Historical Financial Status Section -->
+            <h2 class="text-xl font-bold mb-4">Historical financial breakdown</h2>
+            <div class="flex flex-col lg:flex-row items-center lg:justify-between w-full">
+                <!-- Bar Chart -->
+                <div class="mb-4 lg:mb-0 lg:mr-4">
+                    <canvas id="financialChart" width="450" height="200"></canvas>
+                </div>
+                <!-- Overview of Last Years -->
+                <div class="flex flex-col lg:flex-row items-center lg:justify-between w-full">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border border-gray-300">
+                            <thead>
+                                <tr>
+                                    <th class="border border-gray-300 px-4 py-2">Year</th>
+                                    <th class="border border-gray-300 px-4 py-2">Income (€)</th>
+                                    <th class="border border-gray-300 px-4 py-2">Study Expenses (€)</th>
+                                    <th class="border border-gray-300 px-4 py-2">Study Income (Financial Aid) (€)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-gray-300 px-4 py-2">2023</td>
+                                    <td class="border border-gray-300 px-4 py-2">20,000</td>
+                                    <td class="border border-gray-300 px-4 py-2">8,500</td>
+                                    <td class="border border-gray-300 px-4 py-2">4,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 px-4 py-2">2022</td>
+                                    <td class="border border-gray-300 px-4 py-2">19,500</td>
+                                    <td class="border border-gray-300 px-4 py-2">8,200</td>
+                                    <td class="border border-gray-300 px-4 py-2">3,800</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('financialChart').getContext('2d');
+        const financialChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['2022', '2023'],
+                datasets: [
+                    {
+                        label: 'Study Expenses (€)',
+                        data: [8200, 8500],
+                        backgroundColor: 'green',
+                    },
+                    {
+                        label: 'Financial Support (€)',
+                        data: [3800, 4000],
+                        backgroundColor: 'red',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

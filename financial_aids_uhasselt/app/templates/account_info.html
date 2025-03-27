@@ -24,7 +24,9 @@
             </form>
             <div class="flex justify-between mt-6">
                 <button class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
-                <button class="bg-red-500 text-white py-2 px-4" type="button">Show Overview</button>
+                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
+                    Show Overview
+                </button>
                 <button class="bg-red-500 text-white py-2 px-4" type="submit">Submit</button>
             </div>
         </div>

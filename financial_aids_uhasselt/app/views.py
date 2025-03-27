@@ -36,3 +36,6 @@ def simulate(request):
     }
 
     return render(request, 'account_info.html', context)
+
+def financial_overview(request):
+    return render(request, 'financial_overview.html')
