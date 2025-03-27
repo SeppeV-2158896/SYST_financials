@@ -19,26 +19,29 @@
     </h1>
    <div class="w-full max-w-6xl bg-white shadow-md mt-4 p-6 flex flex-col md:flex-row">
     <div class="w-full md:w-1/3 bg-red-500 p-6 text-white">
-     <form class="space-y-4">
-      <div>
-       <label class="block" for="user-id">
-        User-id:
-       </label>
-       <input class="w-full p-2 text-black" id="user-id" type="text"/>
-      </div>
-      <div>
-       <label class="block" for="password">
-        Password:
-       </label>
-       <input class="w-full p-2 text-black" id="password" type="password"/>
-      </div>
-      <button class="w-full bg-red-700 py-2" type="submit">
-       Login
-      </button>
-      <button class="w-full bg-red-700 py-2" type="button">
-       Continue as guest
-      </button>
-     </form>
+        <form method="post" action="{% url 'login' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+              <label class="block" for="user-id">
+                User-id:
+              </label>
+              <input class="w-full p-2 text-black" id="user-id" name="username" type="text" required/>
+            </div>
+            <div>
+              <label class="block" for="password">
+                Password:
+              </label>
+              <input class="w-full p-2 text-black" id="password" name="password" type="password" required/>
+            </div>
+            <!-- Submit Login Form -->
+            <button class="w-full bg-red-700 py-2" type="submit">
+              Login
+            </button>
+        </form>
+        <!-- Continue as Guest -->
+        <button class="w-full bg-red-700 py-2 mt-4" type="button" onclick="window.location.href='{% url 'simulate' %}?guest=true';">
+        Continue as guest
+        </button>
      <div class="mt-4">
       <a class="text-white underline" href="#">
        Wachtwoord vergeten?
