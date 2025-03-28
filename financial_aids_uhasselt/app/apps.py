@@ -19,6 +19,8 @@ class AppConfig(AppConfig):
             "Income replacement allowance",
             "Foreign incomes",
         ]
+        #---gebruik deze line om vragen die nog in db waren te verwijderen---
+        #Question.objects.all().delete()
 
         for question_text in initial_questions:
             try:
