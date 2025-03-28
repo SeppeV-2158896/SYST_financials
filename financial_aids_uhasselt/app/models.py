@@ -6,3 +6,9 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question_text
+    
+class FinancialSupport(models.Model):
+    applicable = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Financial Support (Applicable: {self.applicable})"

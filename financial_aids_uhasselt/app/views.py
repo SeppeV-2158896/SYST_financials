@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-from app.models import Question
+from app.models import FinancialSupport, Question
 
 def index(request):
     template = loader.get_template('index.html')
@@ -56,5 +56,9 @@ def simulate(request):
 
 def financial_overview(request):
     return render(request, 'financial_overview.html')
+
+def financial_support(request):
+    supports = FinancialSupport.objects.all()
+    return render(request, 'financial_support.html', {'supports': supports})
 
 
