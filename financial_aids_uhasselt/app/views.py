@@ -29,15 +29,25 @@ def simulate(request):
         "Amount of ECTS this year",
         "Domicile"
     ]
+    yes_no_questions_texts = [
+    "Are you staying in a student room?",
+    "Have you bought your laptop through the university?"
+    ]
 
+    yes_no_questions = Question.objects.filter(question_text__in=yes_no_questions_texts)
+#voor debuggen
+    print("Yes/No Questions gevonden:", yes_no_questions)
+
+    
     # Filter de vragen op basis van deze teksten
     basic_questions = Question.objects.filter(question_text__in=basic_question_texts)
-    income_questions = Question.objects.exclude(question_text__in=basic_question_texts)
-
+    income_questions = Question.objects.exclude(question_text__in=basic_question_texts + yes_no_questions_texts)
+    yes_no_questions = Question.objects.filter(question_text__in=yes_no_questions_texts)
     # Pass de user status en gescheiden vragen naar de template
     context = {
         'basic_questions': basic_questions,
         'income_questions': income_questions,
+        'yes_no_questions': yes_no_questions,
         'username': username,
         'header': header,
     }
@@ -46,3 +56,5 @@ def simulate(request):
 
 def financial_overview(request):
     return render(request, 'financial_overview.html')
+
+

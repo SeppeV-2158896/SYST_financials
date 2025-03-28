@@ -13,9 +13,10 @@
     <div class="flex flex-col items-center p-6">
         <div class="w-full max-w-6xl bg-white shadow-md p-6">
             
-            <!-- Basic Questions Section -->
             <p class="text-lg font-semibold">Basic Information</p>
             <p>Please provide the following basic details about yourself. This information will be used to identify you and calculate what kind of support you can receive.</p>
+
+
             <form id="basic-form" class="space-y-4">
                 {% for question in basic_questions %}
                 <div>
@@ -34,6 +35,20 @@
                     </div>
                 </div>
                 {% endfor %}
+                <form id="yes_no-form" class="space-y-4 mt-2">
+                    {% for question in yes_no_questions %}
+                    <div>
+                        <label class="block text-gray-700" for="yes_no_question{{ forloop.counter }}">
+                            {{ question.question_text }}
+                        </label>
+                        <select name="yes_no_question{{ forloop.counter }}" id="yes_no_question{{ forloop.counter }}" class="w-full p-2 border border-gray-300 rounded">
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    {% endfor %}
+                </form>
+    
             </form>
 
             <hr class="my-6 border-t-2 border-gray-300">
