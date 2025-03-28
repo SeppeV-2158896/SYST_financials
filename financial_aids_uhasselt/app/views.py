@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-
 from app.models import Question
 
 def index(request):
@@ -10,7 +9,7 @@ def index(request):
 
 def simulate(request):
     authenticated = request.POST.get('is_authenticated')
-    
+
     # Check if the user is authenticated or accessing as a guest
     if not authenticated and 'guest' not in request.GET:
         return redirect('index')  # Redirect to the login page if unauthorized
@@ -23,14 +22,22 @@ def simulate(request):
         username = "Guest"
         header = "Financial Simulation"  # Header for guest users
 
-    # Get all questions from the database
-    questions = Question.objects.all()
-    
-    print(username)
+    # Definieer de basic en income-related questions
+    basic_question_texts = [
+        "Email address",
+        "Faculty of student",
+        "Amount of ECTS this year",
+        "Domicile"
+    ]
 
-    # Pass the user status and questions to the template
+    # Filter de vragen op basis van deze teksten
+    basic_questions = Question.objects.filter(question_text__in=basic_question_texts)
+    income_questions = Question.objects.exclude(question_text__in=basic_question_texts)
+
+    # Pass de user status en gescheiden vragen naar de template
     context = {
-        'questions': questions,
+        'basic_questions': basic_questions,
+        'income_questions': income_questions,
         'username': username,
         'header': header,
     }

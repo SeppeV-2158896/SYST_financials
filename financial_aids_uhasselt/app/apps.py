@@ -19,11 +19,23 @@ class AppConfig(AppConfig):
             "Income replacement allowance",
             "Foreign incomes",
         ]
+        
         #---gebruik deze line om vragen die nog in db waren te verwijderen---
         #Question.objects.all().delete()
-
+        basic_questions = [
+            "Email address",
+            "Faculty of student",
+            "Amount of ECTS this year",
+            "Domicile",
+        ]
         for question_text in initial_questions:
             try:
                 Question.objects.get_or_create(question_text=question_text)  # Use the correct field name
             except IntegrityError:
                 pass  # Skip if the question already exists
+
+        for question_text in basic_questions:
+            try:
+                Question.objects.get_or_create(question_text = question_text)
+            except IntegrityError:
+                pass

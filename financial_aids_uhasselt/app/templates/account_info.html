@@ -12,25 +12,56 @@
     </h1>
     <div class="flex flex-col items-center p-6">
         <div class="w-full max-w-6xl bg-white shadow-md p-6">
-            <form id="dynamic-form" class="space-y-4">
-                {% for question in questions %}
+            
+            <!-- Basic Questions Section -->
+            <p class="text-lg font-semibold">Basic Information</p>
+            <p>Please provide the following basic details about yourself. This information will be used to identify you and calculate what kind of support you can receive.</p>
+            <form id="basic-form" class="space-y-4">
+                {% for question in basic_questions %}
                 <div>
-                    <label class="block text-gray-700" for="question{{ forloop.counter }}">
+                    <label class="block text-gray-700" for="basic_question{{ forloop.counter }}">
                         {{ question.question_text }}
 
                         <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
                            onmouseover="showTooltip(event, '{{ question.extra_info }}')"
                            onmouseout="hideTooltip()"
                            onclick="toggleTooltip(event, '{{ question.extra_info }}')"></i>
-                           
+
                     </label>
-                    <input class="w-full p-2 border border-gray-300" id="question{{ forloop.counter }}" name="question{{ forloop.counter }}" type="text">
+                    <input class="w-full p-2 border border-gray-300" id="basic_question{{ forloop.counter }}" name="basic_question{{ forloop.counter }}" type="text">
                     <div class="hidden absolute left-0 mt-2 bg-gray-700 text-white text-sm p-2 rounded shadow-md w-64 tooltip">
                         Extra informatie over deze vraag.
                     </div>
                 </div>
                 {% endfor %}
             </form>
+
+            <hr class="my-6 border-t-2 border-gray-300">
+
+            <!-- Income Questions Section -->
+            <p class="text-lg font-semibold">Questions about your income</p>
+            <p>The following questions aim to gather more information about your income to determine eligibility for financial aid.</p>
+            <form id="income-form" class="space-y-4">
+                {% for question in income_questions %}
+                <div>
+                    <label class="block text-gray-700" for="income_question{{ forloop.counter }}">
+                        {{ question.question_text }}
+
+                        <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
+                        onmouseover="showTooltip(event, '{{ question.extra_info }}')"
+                        onmouseout="hideTooltip()"
+                        onclick="toggleTooltip(event, '{{ question.extra_info }}')"></i>
+
+                    </label>
+                    <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" name="income_question{{ forloop.counter }}" type="text">
+                    <div class="hidden absolute left-0 mt-2 bg-gray-700 text-white text-sm p-2 rounded shadow-md w-64 tooltip">
+                        Extra informatie over deze vraag.
+                    </div>
+                </div>
+                {% endfor %}
+            </form>
+
+            <!-- Buttons -->
             <div class="flex justify-between mt-6">
                 <button class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
                 <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
@@ -40,9 +71,5 @@
             </div>
         </div>
     </div>
-    <script>
-        // Example script to change the title dynamically
-        document.getElementById('page-title').innerText = `Welcome, ${localStorage.getItem('username') || 'User'}`;
-    </script>
 </body>
 </html>
