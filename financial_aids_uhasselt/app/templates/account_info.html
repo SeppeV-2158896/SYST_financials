@@ -17,8 +17,17 @@
                 <div>
                     <label class="block text-gray-700" for="question{{ forloop.counter }}">
                         {{ question.question_text }}
+
+                        <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
+                           onmouseover="showTooltip(event, '{{ question.extra_info }}')"
+                           onmouseout="hideTooltip()"
+                           onclick="toggleTooltip(event, '{{ question.extra_info }}')"></i>
+                           
                     </label>
                     <input class="w-full p-2 border border-gray-300" id="question{{ forloop.counter }}" name="question{{ forloop.counter }}" type="text">
+                    <div class="hidden absolute left-0 mt-2 bg-gray-700 text-white text-sm p-2 rounded shadow-md w-64 tooltip">
+                        Extra informatie over deze vraag.
+                    </div>
                 </div>
                 {% endfor %}
             </form>

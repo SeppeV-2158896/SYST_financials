@@ -10,10 +10,14 @@ class AppConfig(AppConfig):
         from app.models import Question  # Import inside the method to avoid premature import issues
 
         initial_questions = [
-            "What is your name?",
-            "How old are you?",
-            "Where are you from?",
-            "What is your favorite color?",
+            "Annual family income (in euros)",
+            "Cadastral income (rental properties)",
+            "Cadastral income (business properties)",
+            "Separable taxable incomes(such as bonuses, early vacation bonus)",
+            "Alimentation money(if applicable)",
+            "Living wages",
+            "Income replacement allowance",
+            "Foreign incomes",
         ]
 
         for question_text in initial_questions:
