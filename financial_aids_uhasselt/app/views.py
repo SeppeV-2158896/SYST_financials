@@ -1,33 +1,64 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-
-from app.models import Question
+from app.models import FinancialSupport, Question
 
 def index(request):
     template = loader.get_template('index.html')
     return HttpResponse(template.render({}, request))
 
 def simulate(request):
-    # If user is not authenticated and they are not a guest
-    if not request.user.is_authenticated:
-        if 'guest' in request.GET:
-            # Treat the user as a guest
-            username = None
-        else:
-            # If they are not logged in and not a guest, redirect them to login page
-            return index()
+    authenticated = request.POST.get('is_authenticated')
+
+    # Check if the user is authenticated or accessing as a guest
+    if not authenticated and 'guest' not in request.GET:
+        return redirect('index')  # Redirect to the login page if unauthorized
+
+    # Determine user type and set header
+    if authenticated and 'guest' not in request.GET:
+        username = request.POST.get('username')
+        header = f"Welcome {username}"  # Header for authenticated users
     else:
-        # If the user is authenticated, use their username
-        username = request.user.username
+        username = "Guest"
+        header = "Financial Simulation"  # Header for guest users
+
+    # Definieer de basic en income-related questions
+    basic_question_texts = [
+        "Email address",
+        "Faculty of student",
+        "Amount of ECTS this year",
+        "Domicile"
+    ]
+    yes_no_questions_texts = [
+    "Are you staying in a student room?",
+    "Have you bought your laptop through the university?"
+    ]
+
+    yes_no_questions = Question.objects.filter(question_text__in=yes_no_questions_texts)
+#voor debuggen
+    print("Yes/No Questions gevonden:", yes_no_questions)
+
     
-    # Get all questions from the database
-    questions = Question.objects.all()
-    
-    # Pass the user status and questions to the template
+    # Filter de vragen op basis van deze teksten
+    basic_questions = Question.objects.filter(question_text__in=basic_question_texts)
+    income_questions = Question.objects.exclude(question_text__in=basic_question_texts + yes_no_questions_texts)
+    yes_no_questions = Question.objects.filter(question_text__in=yes_no_questions_texts)
+    # Pass de user status en gescheiden vragen naar de template
     context = {
-        'questions': questions,
-        'username': username or 'Guest',  # If username is None, display 'Guest'
+        'basic_questions': basic_questions,
+        'income_questions': income_questions,
+        'yes_no_questions': yes_no_questions,
+        'username': username,
+        'header': header,
     }
 
-    return render(request, 'simulate.html', context)
+    return render(request, 'account_info.html', context)
+
+def financial_overview(request):
+    return render(request, 'financial_overview.html')
+
+def financial_support(request):
+    supports = FinancialSupport.objects.all()
+    return render(request, 'financial_support.html', {'supports': supports})
+
+
