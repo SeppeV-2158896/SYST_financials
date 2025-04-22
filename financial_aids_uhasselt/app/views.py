@@ -4,7 +4,7 @@ from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 import json
 from app.models import FinancialSupport, Question
-from .calculations import calculate_reference_income
+from .calculations import calculate_reference_income, determine_category
 from django.contrib.auth.hashers import check_password
 from app.models import UserProfile
 
@@ -94,6 +94,17 @@ def calculate_income_view(request):
                         
             # Perform the calculation
             result = calculate_reference_income(data)
+            
+            if "reference_income" in result:
+                # Determine the category based on living unit points and reference income
+                living_unit_points = float(data.get("living_unit_points", 0) or 0.0)
+                reference_income = result["reference_income"]
+                category = determine_category(living_unit_points, reference_income)
+                
+                print(f"Category determined: {category}")
+                
+                # Add the category to the response
+                result["category"] = category
             
             # Return the result as JSON
             return JsonResponse(result)

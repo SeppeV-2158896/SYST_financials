@@ -52,7 +52,7 @@ def determine_category(living_unit_points, reference_income):
         threshold = IncomeThreshold.objects.get(punten_leefeenheid=living_unit_points)
 
         # Check if the reference income is within the min and max range
-        if threshold.min_inkomensgrens <= reference_income <= threshold.max_inkomensgrens:
+        if threshold.min_inkomensgrens <= reference_income <= threshold.categorie_4:
             # Determine the category
             if reference_income <= threshold.categorie_1:
                 return 1
@@ -60,6 +60,8 @@ def determine_category(living_unit_points, reference_income):
                 return 2
             elif reference_income <= threshold.categorie_3:
                 return 3
+            elif reference_income <= threshold.max_inkomensgrens:
+                return 0
             elif reference_income <= threshold.categorie_4:
                 return 4
         return None  # No matching category
