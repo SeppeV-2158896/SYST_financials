@@ -20,11 +20,11 @@
                 {% for question in basic_questions %}
                 <div>
                     <label class="block text-gray-700" for="basic_question{{ forloop.counter }}">
-                        {{ question.question_text }}
+                        {{ question.text }}
                     </label>
                     <input class="w-full p-2 border border-gray-300" id="basic_question{{ forloop.counter }}" 
                            name="basic_question{{ forloop.counter }}" type="text"
-                           value="{% if question.question_text == 'Email address' %}{{ email }}{% elif question.question_text == 'Faculty of student' %}{{ faculty }}{% elif question.question_text == 'Amount of ECTS this year' %}{{ ects_amount }}{% elif question.question_text == 'Domicile' %}{{ domicile }}{% endif %}">
+                           value="{% if question.text == 'Email address' %}{{ email }}{% elif question.text == 'Faculty of student' %}{{ faculty }}{% elif question.text == 'Amount of ECTS this year' %}{{ ects_amount }}{% elif question.text == 'Domicile' %}{{ domicile }}{% endif %}">
                 </div>
                 {% endfor %}
             </form>
@@ -39,11 +39,11 @@
                 {% for question in income_questions %}
                 <div>
                     <label class="block text-gray-700" for="income_question{{ forloop.counter }}">
-                        {{ question.question_text }}
+                        {{ question.text }}
                     </label>
                     <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" 
                            name="income_question{{ forloop.counter }}" type="text"
-                           value="{% if question.question_text == 'Annual family income' %}{{ annual_family_income }}{% elif question.question_text == 'Cadastral income rental' %}{{ cadastral_income_rental }}{% elif question.question_text == 'Cadastral income business' %}{{ cadastral_income_business }}{% elif question.question_text == 'Separable taxable incomes' %}{{ separable_taxable_incomes }}{% elif question.question_text == 'Alimentation money' %}{{ alimentation_money }}{% elif question.question_text == 'Living wages' %}{{ living_wages }}{% elif question.question_text == 'Income replacement allowance' %}{{ income_replacement_allowance }}{% elif question.question_text == 'Foreign incomes' %}{{ foreign_incomes }}{% elif question.question_text == 'Study income' %}{{ study_income }}{% endif %}">
+                           value="{% if question.text == 'Living unit points' %}{{ living_unit_points }}{% elif question.text == 'Annual family income' %}{{ annual_family_income }}{% elif question.text == 'Cadastral income (rental)' %}{{ cadastral_income_rental }}{% elif question.text == 'Cadastral income (business)' %}{{ cadastral_income_business }}{% elif question.text == 'Separable taxable incomes' %}{{ separable_taxable_incomes }}{% elif question.text == 'Alimentation money' %}{{ alimentation_money }}{% elif question.text == 'Living wages' %}{{ living_wages }}{% elif question.text == 'Income replacement allowance' %}{{ income_replacement_allowance }}{% elif question.text == 'Foreign incomes' %}{{ foreign_incomes }}{% elif question.text == 'Study income' %}{{ study_income }}{% endif %}">
                 </div>
                 {% endfor %}
             </form>

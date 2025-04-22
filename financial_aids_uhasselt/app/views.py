@@ -50,13 +50,13 @@ def simulate(request):
     context = {
         'username': username,
         'header': header,
-        'basic_questions': Question.objects.filter(question_text__in=[
+        'basic_questions': Question.objects.filter(text__in=[
             "Email address", "Faculty of student", "Amount of ECTS this year", "Domicile"
         ]),
-        'yes_no_questions': Question.objects.filter(question_text__in=[
+        'yes_no_questions': Question.objects.filter(text__in=[
             "Are you staying in a student room?", "Have you bought your laptop through the university?"
         ]),
-        'income_questions': Question.objects.exclude(question_text__in=[
+        'income_questions': Question.objects.exclude(text__in=[
             "Email address", "Faculty of student", "Amount of ECTS this year",
             "Domicile", "Are you staying in a student room?", "Have you bought your laptop through the university?"
         ]),
