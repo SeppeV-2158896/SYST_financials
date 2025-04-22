@@ -64,3 +64,16 @@ class SupportSystem(models.Model):
 
     def __str__(self):
         return self.name
+
+class HistoricalData(models.Model):
+    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='historical_data')
+    school_year = models.CharField(max_length=9)  # Example: "2024-2025"
+    income = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    study_expenses_tuition = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    study_expenses_books = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    study_expenses_housing = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    financial_aid_scholarship = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    financial_aid_grant = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.school_year}"

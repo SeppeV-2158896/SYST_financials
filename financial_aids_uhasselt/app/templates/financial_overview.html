@@ -54,38 +54,36 @@
 
             <!-- Historical Financial Status Section -->
             <h2 class="text-xl font-bold mb-4">Historical financial breakdown</h2>
-            <div class="flex flex-col lg:flex-row items-center lg:justify-between w-full">
-                <!-- Bar Chart -->
-                <div class="mb-4 lg:mb-0 lg:mr-4">
-                    <canvas id="financialChart" width="450" height="200"></canvas>
-                </div>
-                <!-- Overview of Last Years -->
-                <div class="flex flex-col lg:flex-row items-center lg:justify-between w-full">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full border border-gray-300">
-                            <thead>
-                                <tr>
-                                    <th class="border border-gray-300 px-4 py-2">Year</th>
-                                    <th class="border border-gray-300 px-4 py-2">Income (€)</th>
-                                    <th class="border border-gray-300 px-4 py-2">Study Expenses (€)</th>
-                                    <th class="border border-gray-300 px-4 py-2">Study Income (Financial Aid) (€)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="border border-gray-300 px-4 py-2">2023</td>
-                                    <td class="border border-gray-300 px-4 py-2">20,000</td>
-                                    <td class="border border-gray-300 px-4 py-2">8,500</td>
-                                    <td class="border border-gray-300 px-4 py-2">4,000</td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-gray-300 px-4 py-2">2022</td>
-                                    <td class="border border-gray-300 px-4 py-2">19,500</td>
-                                    <td class="border border-gray-300 px-4 py-2">8,200</td>
-                                    <td class="border border-gray-300 px-4 py-2">3,800</td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <div class="flex flex-col items-center p-6">
+                <div class="w-full max-w-6xl bg-white shadow-md p-6">
+                    <table class="min-w-full border-collapse border border-gray-400 mt-4">
+                        <thead>
+                            <tr>
+                                <th class="border border-gray-400 px-4 py-2 text-left">School Year</th>
+                                <th class="border border-gray-400 px-4 py-2 text-left">Income (€)</th>
+                                <th class="border border-gray-400 px-4 py-2 text-left">Study Expenses - Tuition (€)</th>
+                                <th class="border border-gray-400 px-4 py-2 text-left">Study Expenses - Books (€)</th>
+                                <th class="border border-gray-400 px-4 py-2 text-left">Study Expenses - Housing (€)</th>
+                                <th class="border border-gray-400 px-4 py-2 text-left">Financial Aid - Scholarship (€)</th>
+                                <th class="border border-gray-400 px-4 py-2 text-left">Financial Aid - Grant (€)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in historical_data %}
+                            <tr>
+                                <td class="border border-gray-400 px-4 py-2">{{ data.school_year }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ data.income|floatformat:2 }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ data.study_expenses_tuition|floatformat:2 }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ data.study_expenses_books|floatformat:2 }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ data.study_expenses_housing|floatformat:2 }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ data.financial_aid_scholarship|floatformat:2 }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ data.financial_aid_grant|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="flex justify-center mt-8">
+                        <canvas id="financialChart" width="800" height="400"></canvas>
                     </div>
                 </div>
             </div>
@@ -93,32 +91,39 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('financialChart').getContext('2d');
-        const financialChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['2022', '2023'],
-                datasets: [
-                    {
-                        label: 'Study Expenses (€)',
-                        data: [8200, 8500],
-                        backgroundColor: 'green',
-                    },
-                    {
-                        label: 'Financial Support (€)',
-                        data: [3800, 4000],
-                        backgroundColor: 'red',
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            const financialChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {{ graph_labels|safe }}, // Labels for the academic years
+                    datasets: [
+                        {
+                            label: 'Total Income (€)',
+                            data: {{ graph_income|safe }}, // Total income for each year
+                            backgroundColor: 'green',
+                        },
+                        {
+                            label: 'Total Expenses (€)',
+                            data: {{ graph_expenses|safe }}, // Total expenses for each year
+                            backgroundColor: 'red',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
+            });
+
+            // Debugging logs
+            console.log("Labels:", {{ graph_labels|safe }});
+            console.log("Income Data:", {{ graph_income|safe }});
+            console.log("Expenses Data:", {{ graph_expenses|safe }});
         });
     </script>
 </body>

@@ -8,6 +8,7 @@ from .calculations import calculate_reference_income, determine_category
 from django.contrib.auth.hashers import check_password
 from app.models import UserProfile
 from urllib.parse import urlencode
+from decimal import Decimal
 
 def index(request):
     context = {}
@@ -80,7 +81,37 @@ def simulate(request):
     return render(request, 'account_info.html', context)
 
 def financial_overview(request):
-    return render(request, 'financial_overview.html')
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('index')
+
+    user = UserProfile.objects.get(pk=user_id)
+    historical_data = user.historical_data.all().order_by('school_year')
+
+    # Calculate totals for each year
+    graph_data = {}
+    for data in historical_data:
+        year = data.school_year
+        if year not in graph_data:
+            graph_data[year] = {"income": Decimal(0), "expenses": Decimal(0)}
+        graph_data[year]["income"] += Decimal(data.income)
+        graph_data[year]["expenses"] += Decimal(
+            data.study_expenses_tuition +
+            data.study_expenses_books +
+            data.study_expenses_housing
+        )
+
+    # Prepare data for the graph
+    graph_labels = list(graph_data.keys())
+    graph_income = [float(graph_data[year]["income"]) for year in graph_labels]
+    graph_expenses = [float(graph_data[year]["expenses"]) for year in graph_labels]
+
+    return render(request, 'financial_overview.html', {
+        'historical_data': historical_data,
+        'graph_labels': graph_labels,
+        'graph_income': graph_income,
+        'graph_expenses': graph_expenses,
+    })
 
 def financial_support(request):
     supports = json.loads(request.GET.get('supports', '[]'))
