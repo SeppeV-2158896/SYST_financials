@@ -39,53 +39,42 @@ def simulate(request):
 
     header = f"Welcome {user_email}" if user_email else "Financial Simulation"
     username = user_email if user_email else "Guest"
-    
-    basic_question_texts = [
-        "Email address",
-        "Faculty of student",
-        "Amount of ECTS this year",
-        "Domicile"
-    ]
-    yes_no_questions_texts = [
-        "Are you staying in a student room?",
-        "Have you bought your laptop through the university?"
-    ]
 
-    yes_no_questions = Question.objects.filter(question_text__in=yes_no_questions_texts)
-    basic_questions = Question.objects.filter(question_text__in=basic_question_texts)
-    income_questions = Question.objects.exclude(question_text__in=basic_question_texts + yes_no_questions_texts)
-
-    # 👉 Load user data
-    user_data = {}
+    user = None
     if user_email:
         try:
             user = UserProfile.objects.get(email=user_email)
-            user_data = {
-                'email': user.email,
-                'faculty': user.faculty,
-                'ects_amount': user.ects_amount,
-                'domicile': user.domicile,
-                'annual_family_income': user.annual_family_income,
-                'cadastral_income_rental': user.cadastral_income_rental,
-                'cadastral_income_business': user.cadastral_income_business,
-                'separable_taxable_incomes': user.separable_taxable_incomes,
-                'alimentation_money': user.alimentation_money,
-                'living_wages': user.living_wages,
-                'income_replacement_allowance': user.income_replacement_allowance,
-                'foreign_incomes': user.foreign_incomes,
-                'study_income': user.study_income,
-                'living_unit_points': user.living_unit_points,
-            }
         except UserProfile.DoesNotExist:
-            pass  # fallback op lege form
+            user = None
 
     context = {
-        'basic_questions': basic_questions,
-        'income_questions': income_questions,
-        'yes_no_questions': yes_no_questions,
         'username': username,
         'header': header,
-        'user_data': user_data,
+        'basic_questions': Question.objects.filter(question_text__in=[
+            "Email address", "Faculty of student", "Amount of ECTS this year", "Domicile"
+        ]),
+        'yes_no_questions': Question.objects.filter(question_text__in=[
+            "Are you staying in a student room?", "Have you bought your laptop through the university?"
+        ]),
+        'income_questions': Question.objects.exclude(question_text__in=[
+            "Email address", "Faculty of student", "Amount of ECTS this year",
+            "Domicile", "Are you staying in a student room?", "Have you bought your laptop through the university?"
+        ]),
+        # Prefill user data
+        'email': user.email if user else '',
+        'faculty': user.faculty if user else '',
+        'ects_amount': user.ects_amount if user else '',
+        'domicile': user.domicile if user else '',
+        'living_unit_points': user.living_unit_points if user else '',
+        'annual_family_income': user.annual_family_income if user else '',
+        'cadastral_income_rental': user.cadastral_income_rental if user else '',
+        'cadastral_income_business': user.cadastral_income_business if user else '',
+        'separable_taxable_incomes': user.separable_taxable_incomes if user else '',
+        'alimentation_money': user.alimentation_money if user else '',
+        'living_wages': user.living_wages if user else '',
+        'income_replacement_allowance': user.income_replacement_allowance if user else '',
+        'foreign_incomes': user.foreign_incomes if user else '',
+        'study_income': user.study_income if user else '',
     }
 
     return render(request, 'account_info.html', context)

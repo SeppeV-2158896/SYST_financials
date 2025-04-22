@@ -12,43 +12,21 @@
     </h1>
     <div class="flex flex-col items-center p-6">
         <div class="w-full max-w-6xl bg-white shadow-md p-6">
-            
+
             <p class="text-lg font-semibold">Basic Information</p>
             <p>Please provide the following basic details about yourself. This information will be used to identify you and calculate what kind of support you can receive.</p>
-
 
             <form id="basic-form" class="space-y-4">
                 {% for question in basic_questions %}
                 <div>
                     <label class="block text-gray-700" for="basic_question{{ forloop.counter }}">
                         {{ question.question_text }}
-
-                        <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
-                           onmouseover="showTooltip(event, '{{ question.extra_info }}')"
-                           onmouseout="hideTooltip()"
-                           onclick="toggleTooltip(event, '{{ question.extra_info }}')"></i>
-
                     </label>
-                    <input class="w-full p-2 border border-gray-300" id="basic_question{{ forloop.counter }}" name="basic_question{{ forloop.counter }}" type="text">
-                    <div class="hidden absolute left-0 mt-2 bg-gray-700 text-white text-sm p-2 rounded shadow-md w-64 tooltip">
-                        Extra informatie over deze vraag.
-                    </div>
+                    <input class="w-full p-2 border border-gray-300" id="basic_question{{ forloop.counter }}" 
+                           name="basic_question{{ forloop.counter }}" type="text"
+                           value="{% if question.question_text == 'Email address' %}{{ email }}{% elif question.question_text == 'Faculty of student' %}{{ faculty }}{% elif question.question_text == 'Amount of ECTS this year' %}{{ ects_amount }}{% elif question.question_text == 'Domicile' %}{{ domicile }}{% endif %}">
                 </div>
                 {% endfor %}
-                <form id="yes_no-form" class="space-y-4 mt-2">
-                    {% for question in yes_no_questions %}
-                    <div>
-                        <label class="block text-gray-700" for="yes_no_question{{ forloop.counter }}">
-                            {{ question.question_text }}
-                        </label>
-                        <select name="yes_no_question{{ forloop.counter }}" id="yes_no_question{{ forloop.counter }}" class="w-full p-2 border border-gray-300 rounded">
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    {% endfor %}
-                </form>
-    
             </form>
 
             <hr class="my-6 border-t-2 border-gray-300">
@@ -56,22 +34,16 @@
             <!-- Income Questions Section -->
             <p class="text-lg font-semibold">Questions about your income</p>
             <p>The following questions aim to gather more information about your income to determine eligibility for financial aid.</p>
+
             <form id="income-form" class="space-y-4">
                 {% for question in income_questions %}
                 <div>
                     <label class="block text-gray-700" for="income_question{{ forloop.counter }}">
                         {{ question.question_text }}
-
-                        <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
-                        onmouseover="showTooltip(event, '{{ question.extra_info }}')"
-                        onmouseout="hideTooltip()"
-                        onclick="toggleTooltip(event, '{{ question.extra_info }}')"></i>
-
                     </label>
-                    <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" name="income_question{{ forloop.counter }}" type="text">
-                    <div class="hidden absolute left-0 mt-2 bg-gray-700 text-white text-sm p-2 rounded shadow-md w-64 tooltip">
-                        Extra informatie over deze vraag.
-                    </div>
+                    <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" 
+                           name="income_question{{ forloop.counter }}" type="text"
+                           value="{% if question.question_text == 'Annual family income' %}{{ annual_family_income }}{% elif question.question_text == 'Cadastral income rental' %}{{ cadastral_income_rental }}{% elif question.question_text == 'Cadastral income business' %}{{ cadastral_income_business }}{% elif question.question_text == 'Separable taxable incomes' %}{{ separable_taxable_incomes }}{% elif question.question_text == 'Alimentation money' %}{{ alimentation_money }}{% elif question.question_text == 'Living wages' %}{{ living_wages }}{% elif question.question_text == 'Income replacement allowance' %}{{ income_replacement_allowance }}{% elif question.question_text == 'Foreign incomes' %}{{ foreign_incomes }}{% elif question.question_text == 'Study income' %}{{ study_income }}{% endif %}">
                 </div>
                 {% endfor %}
             </form>
@@ -86,47 +58,3 @@
                     Submit
                 </button>
             </div>
-        </div>
-    </div>
-
-    <script>
-        document.getElementById("submit-button").addEventListener("click", function () {
-            // Collect data from all forms
-            const basicForm = new FormData(document.getElementById("basic-form"));
-            const yesNoForm = new FormData(document.getElementById("yes_no-form"));
-            const incomeForm = new FormData(document.getElementById("income-form"));
-
-            // Combine all form data into a single object
-            const formData = {};
-            basicForm.forEach((value, key) => (formData[key] = value));
-            yesNoForm.forEach((value, key) => (formData[key] = value));
-            incomeForm.forEach((value, key) => (formData[key] = value));
-
-            // Send the data to the backend
-            fetch("{% url 'calculate_income' %}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}", // Include CSRF token for security
-                },
-                body: JSON.stringify(formData),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.error) {
-                        alert("Error: " + data.error);
-                    } else {
-                        console.log("Calculation Result:", data);
-                        alert(
-                            `Reference Income: ${data.reference_income}\nReplacement Income Percentage: ${data.replacement_income_percentage}%\n70% Replacement Income: ${data.is_70_percent_replacement}`
-                        );
-
-                        // Redirect to the financial_support view
-                        window.location.href = "{% url 'financial_support' %}";
-                    }
-                })
-                .catch((error) => console.error("Error:", error));
-        });
-    </script>
-</body>
-</html>
