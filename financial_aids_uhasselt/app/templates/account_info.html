@@ -82,11 +82,51 @@
                 <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
                     Show Overview
                 </button>
-                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_support' %}';">
+                <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button">
                     Submit
                 </button>
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById("submit-button").addEventListener("click", function () {
+            // Collect data from all forms
+            const basicForm = new FormData(document.getElementById("basic-form"));
+            const yesNoForm = new FormData(document.getElementById("yes_no-form"));
+            const incomeForm = new FormData(document.getElementById("income-form"));
+
+            // Combine all form data into a single object
+            const formData = {};
+            basicForm.forEach((value, key) => (formData[key] = value));
+            yesNoForm.forEach((value, key) => (formData[key] = value));
+            incomeForm.forEach((value, key) => (formData[key] = value));
+
+            // Send the data to the backend
+            fetch("{% url 'calculate_income' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}", // Include CSRF token for security
+                },
+                body: JSON.stringify(formData),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        alert("Error: " + data.error);
+                    } else {
+                        console.log("Calculation Result:", data);
+                        alert(
+                            `Reference Income: ${data.reference_income}\nReplacement Income Percentage: ${data.replacement_income_percentage}%\n70% Replacement Income: ${data.is_70_percent_replacement}`
+                        );
+
+                        // Redirect to the financial_support view
+                        window.location.href = "{% url 'financial_support' %}";
+                    }
+                })
+                .catch((error) => console.error("Error:", error));
+        });
+    </script>
 </body>
 </html>

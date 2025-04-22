@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader
+from django.views.decorators.csrf import csrf_exempt
+import json
 from app.models import FinancialSupport, Question
+from .calculations import calculate_reference_income
 
 def index(request):
     template = loader.get_template('index.html')
@@ -60,5 +63,21 @@ def financial_overview(request):
 def financial_support(request):
     supports = FinancialSupport.objects.all()
     return render(request, 'financial_support.html', {'supports': supports})
+
+@csrf_exempt  # Disable CSRF for this endpoint (ensure security in production)
+def calculate_income_view(request):
+    if request.method == "POST":
+        try:
+            # Parse JSON data from the request body
+            data = json.loads(request.body)
+            
+            # Perform the calculation
+            result = calculate_reference_income(data)
+            
+            # Return the result as JSON
+            return JsonResponse(result)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
