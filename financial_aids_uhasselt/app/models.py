@@ -34,6 +34,8 @@ class UserProfile(models.Model):
     income_replacement_allowance = models.DecimalField(max_digits=12, decimal_places=2)
     foreign_incomes = models.DecimalField(max_digits=12, decimal_places=2)
 
+    study_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+
     def __str__(self):
         return self.email
     

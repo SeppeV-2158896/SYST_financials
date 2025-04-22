@@ -27,16 +27,8 @@ def calculate_reference_income(data):
             + foreign_incomes
         )
 
-        # Check if 70% of the income comes from replacement incomes
-        replacement_income = (
-            living_wages + income_replacement_allowance + alimentation_money
-        )
-        replacement_income_percentage = (replacement_income / reference_income) * 100
-
         return {
             "reference_income": reference_income,
-            "replacement_income_percentage": replacement_income_percentage,
-            "is_70_percent_replacement": replacement_income_percentage >= 70,
         }
     except Exception as e:
         return {"error": str(e)}
