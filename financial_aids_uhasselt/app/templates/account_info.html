@@ -16,7 +16,8 @@
             <p class="text-lg font-semibold">Basic Information</p>
             <p>Please provide the following basic details about yourself. This information will be used to identify you and calculate what kind of support you can receive.</p>
 
-            <form id="basic-form" class="space-y-4">
+            <form id="basic-form" class="space-y-4" method="POST">
+                {% csrf_token %}
                 {% for question in basic_questions %}
                 <div>
                     <label class="block text-gray-700" for="basic_question{{ forloop.counter }}">
@@ -35,18 +36,26 @@
             <p class="text-lg font-semibold">Questions about your income</p>
             <p>The following questions aim to gather more information about your income to determine eligibility for financial aid.</p>
 
-            <form id="income-form" class="space-y-4">
+            <form id="income-form" class="space-y-4" method="POST">
+                {% csrf_token %}
                 {% for question in income_questions %}
                 <div>
                     <label class="block text-gray-700" for="income_question{{ forloop.counter }}">
                         {{ question.text }}
                     </label>
-                    <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" 
-                           name="income_question{{ forloop.counter }}" type="text"
+                    <input class="w-full p-2 border border-gray-300" id="{{ question.tag }}" 
+                           name="{{ question.tag}}" type="text"
                            value="{% if question.text == 'Living unit points' %}{{ living_unit_points }}{% elif question.text == 'Annual family income' %}{{ annual_family_income }}{% elif question.text == 'Cadastral income (rental)' %}{{ cadastral_income_rental }}{% elif question.text == 'Cadastral income (business)' %}{{ cadastral_income_business }}{% elif question.text == 'Separable taxable incomes' %}{{ separable_taxable_incomes }}{% elif question.text == 'Alimentation money' %}{{ alimentation_money }}{% elif question.text == 'Living wages' %}{{ living_wages }}{% elif question.text == 'Income replacement allowance' %}{{ income_replacement_allowance }}{% elif question.text == 'Foreign incomes' %}{{ foreign_incomes }}{% elif question.text == 'Study income' %}{{ study_income }}{% endif %}">
                 </div>
                 {% endfor %}
+                <div class="flex justify-between mt-6">
+                    <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
+                        Submit
+                    </button>
+                </div>
             </form>
+
+            <hr class="my-6 border-t-2 border-gray-300">
 
             <!-- Buttons -->
             <div class="flex justify-between mt-6">
@@ -54,7 +63,43 @@
                 <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
                     Show Overview
                 </button>
-                <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button">
-                    Submit
-                </button>
             </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate_income() {
+
+            console.log("Calculating income...");
+            // Gather all input fields in the income form
+            const formData = {};
+            const inputs = document.querySelectorAll('#income-form input');
+            inputs.forEach(input => {
+                formData[input.name] = input.value; // Use the 'name' attribute as the key
+            });
+
+            // Send data to the server
+            fetch('/calculate-income/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    alert(`Reference Income: ${data.reference_income}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while calculating income.');
+            });
+        }
+    </script>
+</body>
+</html>

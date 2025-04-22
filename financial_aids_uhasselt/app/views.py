@@ -5,7 +5,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from app.models import FinancialSupport, Question
 from .calculations import calculate_reference_income
-
 from django.contrib.auth.hashers import check_password
 from app.models import UserProfile
 
@@ -92,7 +91,7 @@ def calculate_income_view(request):
         try:
             # Parse JSON data from the request body
             data = json.loads(request.body)
-            
+                        
             # Perform the calculation
             result = calculate_reference_income(data)
             
