@@ -55,3 +55,12 @@ class IncomeThreshold(models.Model):
 
     def __str__(self):
         return f"Punten {self.punten_leefeenheid}"
+
+class SupportSystem(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(null=True, blank=True)
+    min_category = models.IntegerField()  # Minimum eligible category
+    max_category = models.IntegerField()  # Maximum eligible category
+
+    def __str__(self):
+        return self.name

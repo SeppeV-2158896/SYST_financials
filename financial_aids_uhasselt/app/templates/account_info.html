@@ -66,33 +66,33 @@
             </div>
         </div>
     </div>
-
     <script>
         function calculate_income() {
-
-            console.log("Calculating income...");
-            // Gather all input fields in the income form
             const formData = {};
             const inputs = document.querySelectorAll('#income-form input');
             inputs.forEach(input => {
-                formData[input.name] = input.value; // Use the 'name' attribute as the key
+                formData[input.name] = input.value;
             });
 
-            // Send data to the server
             fetch('/calculate-income/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+                    'X-CSRFToken': '{{ csrf_token }}'
                 },
                 body: JSON.stringify(formData)
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(`Error: ${data.error}`);
+            .then(response => {
+                if (response.redirected) {
+                    // Redirect handled by the server
+                    window.location.href = response.url;
                 } else {
-                    alert(`Reference Income: ${data.reference_income}`);
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data && data.error) {
+                    alert(`Error: ${data.error}`);
                 }
             })
             .catch(error => {

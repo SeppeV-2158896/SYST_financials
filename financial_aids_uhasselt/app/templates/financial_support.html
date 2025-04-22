@@ -5,7 +5,7 @@
     <title>Financial Aids Overview</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</head>
+</head>    
 <body class="bg-gray-200">
     <h1 class="text-2xl font-bold mt-4 bg-white px-4 py-2 shadow-md">
         Financial Aids Overview
@@ -20,24 +20,23 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for support in supports %}
                     <tr>
-                        <td class="border border-gray-400 px-4 py-2">Jan De Lange Main Trust Account</td>
+                        <td class="border border-gray-400 px-4 py-2">{{ support.name }}</td>
                         <td class="border border-gray-400 px-4 py-2">
+                            {% if support.eligible %}
                             <button class="bg-green-500 text-white px-2 py-1 rounded">APPLY</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-400 px-4 py-2">Super Intelligent Act</td>
-                        <td class="border border-gray-400 px-4 py-2">
+                            {% else %}
                             <button class="bg-red-500 text-white px-2 py-1 rounded">N/A</button>
+                            {% endif %}
                         </td>
                     </tr>
+                    {% endfor %}
+                    {% if error %}
                     <tr>
-                        <td class="border border-gray-400 px-4 py-2">Transfer Market Possibility</td>
-                        <td class="border border-gray-400 px-4 py-2">
-                            <button class="bg-red-500 text-white px-2 py-1 rounded">N/A</button>
-                        </td>
+                        <td colspan="2" class="border border-gray-400 px-4 py-2 text-red-500">{{ error }}</td>
                     </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>

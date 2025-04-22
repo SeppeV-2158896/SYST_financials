@@ -3,10 +3,11 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 import json
-from app.models import FinancialSupport, Question
+from app.models import FinancialSupport, Question, SupportSystem
 from .calculations import calculate_reference_income, determine_category
 from django.contrib.auth.hashers import check_password
 from app.models import UserProfile
+from urllib.parse import urlencode
 
 def index(request):
     context = {}
@@ -82,34 +83,47 @@ def financial_overview(request):
     return render(request, 'financial_overview.html')
 
 def financial_support(request):
-    supports = FinancialSupport.objects.all()
-    return render(request, 'financial_support.html', {'supports': supports})
+    supports = json.loads(request.GET.get('supports', '[]'))
+    error = request.GET.get('error', None)
+    return render(request, 'financial_support.html', {'supports': supports, 'error': error})
 
-@csrf_exempt  # Disable CSRF for this endpoint (ensure security in production)
+@csrf_exempt
 def calculate_income_view(request):
     if request.method == "POST":
         try:
             # Parse JSON data from the request body
             data = json.loads(request.body)
-                        
+            
             # Perform the calculation
             result = calculate_reference_income(data)
             
             if "reference_income" in result:
-                # Determine the category based on living unit points and reference income
+                # Determine the category
                 living_unit_points = float(data.get("living_unit_points", 0) or 0.0)
                 reference_income = result["reference_income"]
                 category = determine_category(living_unit_points, reference_income)
-                
-                print(f"Category determined: {category}")
-                
-                # Add the category to the response
                 result["category"] = category
-            
-            # Return the result as JSON
-            return JsonResponse(result)
+
+                # Fetch all support systems
+                all_supports = SupportSystem.objects.all()
+                supports = [
+                    {
+                        "name": support.name,
+                        "description": support.description,
+                        "eligible": support.min_category <= category <= support.max_category
+                    }
+                    for support in all_supports
+                ]
+
+                # Redirect to financial_support with supports as query parameters
+                query_params = urlencode({'supports': json.dumps(supports)})
+                return redirect(f'/financial-support/?{query_params}')
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+            # Redirect with an error message
+            query_params = urlencode({'error': str(e)})
+            return redirect(f'/financial-support/?{query_params}')
+    # Redirect for invalid request method
+    query_params = urlencode({'error': "Invalid request method"})
+    return redirect(f'/financial-support/?{query_params}')
 
 
