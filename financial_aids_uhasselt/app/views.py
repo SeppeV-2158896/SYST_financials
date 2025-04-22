@@ -19,7 +19,7 @@ def index(request):
         try:
             user = UserProfile.objects.get(email=email)
             # if check_password(password, user.password):
-            if password == user.password:
+            if check_password(password, user.password):
                 # ✅ Login succesvol
                 request.session['user_id'] = user.user_id
                 request.session['email'] = user.email
