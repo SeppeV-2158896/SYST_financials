@@ -1,0 +1,48 @@
+Scenario 1: Update Annual Family Income for Alice
+-------------------------------------------------
+1. Open the application and navigate to the login page.
+2. Enter the following credentials:
+   - Email: alice@example.com
+   - Password: alice123
+3. Click the "Login" button.
+5. Locate the "Annual Family Income" field under the "Income Questions" section.
+6. Update the value of "Annual Family Income" to 60,000.
+7. Click the "Save" button to save the updated information.
+8. Verify that a success message appears confirming the data has been saved.
+
+Scenario 2: Simulate Study Costs and Eligibility for Bob
+---------------------------------------------------------
+1. Open the application and navigate to the login page.
+2. Click the "Continue as Guest" button to proceed without logging in.
+3. On the simulation page, fill in the following pseudo data:
+   - Email: bob@example.com
+   - Faculty: Law
+   - Amount of ECTS this year: 45
+   - Domicile: Antwerp
+   - Annual Family Income: 30,000
+   - Cadastral Income (Rental): 1,000
+   - Cadastral Income (Business): 500
+   - Separable Taxable Incomes: 200
+   - Alimentation Money: 100
+   - Living Wages: 8,000
+   - Income Replacement Allowance: 500
+   - Foreign Incomes: 300
+4. Click the "Submit" button to calculate the reference income and determine eligibility for support.
+5. Review the results, including the estimated total study cost and a list of eligible support systems.
+6. If applicable, click on any support system link of the Flemish Support System to learn more about them.
+
+Scenario 3: Review Historical Data and Set Up a Meeting for Dave
+-----------------------------------------------------------------
+1. Open the application and navigate to the login page.
+2. Enter the following credentials:
+   - Email: dave@example.com
+   - Password: dave123
+3. Click the "Login" button.
+4. After logging in, navigate to the "Financial Overview" page.
+5. Review the historical financial data, including:
+   - Income for each academic year.
+   - Study expenses (tuition, books, housing) for each academic year.
+   - Financial aid received (scholarships, grants) for each academic year.
+6. Analyze how the study costs and study income have changed over the years.
+7. Navigate back to the account info and click on "Submit".
+8. Apply for an UHasselt aid through UHasselt social service via email.
