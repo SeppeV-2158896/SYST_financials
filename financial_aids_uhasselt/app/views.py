@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 import json
-from app.models import FinancialSupport, Question, SupportSystem
+from app.models import FinancialSupport, Question, SupportSystem  # Replace with your actual model
 from .calculations import calculate_reference_income, determine_category
 from django.contrib.auth.hashers import check_password
 from app.models import UserProfile
@@ -141,7 +142,8 @@ def calculate_income_view(request):
                     {
                         "name": support.name,
                         "description": support.description,
-                        "eligible": support.min_category <= category <= support.max_category
+                        "eligible": support.min_category <= category <= support.max_category,
+                        "link": support.link,
                     }
                     for support in all_supports
                 ]
@@ -156,5 +158,84 @@ def calculate_income_view(request):
     # Redirect for invalid request method
     query_params = urlencode({'error': "Invalid request method"})
     return redirect(f'/financial-support/?{query_params}')
+
+def save_user_data(request):
+    if request.method == "POST":
+        try:
+            import json
+            data = json.loads(request.body)  # Parse JSON payload
+
+            # Extract the email address from the basic_questions
+            email = next(
+                (item["answer"] for item in data.get("basic_questions", []) if item["question"] == "Email address"),
+                None
+            )
+
+            if not email:
+                return JsonResponse({"success": False, "error": "Email address is required."})
+
+            # Get or create the UserProfile for the logged-in user
+            user_profile, created = UserProfile.objects.get_or_create(email=email)
+
+            # Update basic questions
+            user_profile.faculty = next(
+                (item["answer"] for item in data.get("basic_questions", []) if item["question"] == "Faculty of student"), 
+                user_profile.faculty
+            )
+            user_profile.ects_amount = next(
+                (int(item["answer"]) for item in data.get("basic_questions", []) if item["question"] == "Amount of ECTS this year"), 
+                user_profile.ects_amount
+            )
+            user_profile.domicile = next(
+                (item["answer"] for item in data.get("basic_questions", []) if item["question"] == "Domicile"), 
+                user_profile.domicile
+            )
+
+            # Update income questions
+            user_profile.annual_family_income = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Annual family income"), 
+                user_profile.annual_family_income
+            )
+            user_profile.cadastral_income_rental = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Cadastral income (rental)"), 
+                user_profile.cadastral_income_rental
+            )
+            user_profile.cadastral_income_business = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Cadastral income (business)"), 
+                user_profile.cadastral_income_business
+            )
+            user_profile.separable_taxable_incomes = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Separable taxable incomes"), 
+                user_profile.separable_taxable_incomes
+            )
+            user_profile.alimentation_money = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Alimentation money"), 
+                user_profile.alimentation_money
+            )
+            user_profile.living_wages = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Living wages"), 
+                user_profile.living_wages
+            )
+            user_profile.income_replacement_allowance = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Income replacement allowance"), 
+                user_profile.income_replacement_allowance
+            )
+            user_profile.foreign_incomes = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Foreign incomes"), 
+                user_profile.foreign_incomes
+            )
+            user_profile.study_income = next(
+                (float(item["answer"]) for item in data.get("income_questions", []) if item["question"] == "Study income"), 
+                user_profile.study_income
+            )
+
+            # Save the updated profile
+            user_profile.save()
+
+            return JsonResponse({"success": True, "message": "Data saved successfully."})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    return JsonResponse({"success": False, "error": "Invalid request method."})
+
 
 

@@ -41,23 +41,23 @@
                 {% csrf_token %}
                 {% for question in income_questions %}
                 <div>
-                    <label class="block text-gray-700" for="income_question{{ forloop.counter }}">
-                        {{ question.text }}
+                    <label class="block text-gray-700" for="income_question{{ question.tag }}">
+                        {{ question.tag }}
                     </label>
                     <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" 
-                           name="income_question{{ forloop.counter }}" type="text"
-                           value="{% if question.text == 'Living unit points' %}{{ living_unit_points }}{% elif question.text == 'Annual family income' %}{{ annual_family_income }}{% elif question.text == 'Cadastral income (rental)' %}{{ cadastral_income_rental }}{% elif question.text == 'Cadastral income (business)' %}{{ cadastral_income_business }}{% elif question.text == 'Separable taxable incomes' %}{{ separable_taxable_incomes }}{% elif question.text == 'Alimentation money' %}{{ alimentation_money }}{% elif question.text == 'Living wages' %}{{ living_wages }}{% elif question.text == 'Income replacement allowance' %}{{ income_replacement_allowance }}{% elif question.text == 'Foreign incomes' %}{{ foreign_incomes }}{% elif question.text == 'Study income' %}{{ study_income }}{% endif %}">
+                        name="{{ question.tag}}" type="text"
+                        value="{% if question.text == 'Living unit points' %}{{ living_unit_points }}{% elif question.text == 'Annual family income' %}{{ annual_family_income }}{% elif question.text == 'Cadastral income (rental)' %}{{ cadastral_income_rental }}{% elif question.text == 'Cadastral income (business)' %}{{ cadastral_income_business }}{% elif question.text == 'Separable taxable incomes' %}{{ separable_taxable_incomes }}{% elif question.text == 'Alimentation money' %}{{ alimentation_money }}{% elif question.text == 'Living wages' %}{{ living_wages }}{% elif question.text == 'Income replacement allowance' %}{{ income_replacement_allowance }}{% elif question.text == 'Foreign incomes' %}{{ foreign_incomes }}{% elif question.text == 'Study income' %}{{ study_income }}{% endif %}">
                 </div>
                 {% endfor %}
             </form>
 
             <!-- Buttons -->
             <div class="flex justify-between mt-6">
-                <button class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
+                <button id="save-button" class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
                 <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
                     Show Overview
                 </button>
-                <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button">
+                <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
                     Submit
                 </button>
             </div>
@@ -76,6 +76,40 @@
     </div>
 
     <script>
+        function calculate_income() {
+            const formData = {};
+            const inputs = document.querySelectorAll('#income-form input');
+            inputs.forEach(input => {
+                formData[input.name] = input.value;
+            });
+
+            fetch('/calculate-income/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.redirected) {
+                    // Redirect handled by the server
+                    window.location.href = response.url;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data && data.error) {
+                    alert(`Error: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while calculating income.');
+            });
+        }
+
         function downloadJSON() {
             // Collect data from the forms
             const basicFormInputs = document.querySelectorAll('#basic-form input');
@@ -137,6 +171,59 @@
             };
 
             reader.readAsText(file);
+        }
+
+        document.getElementById("save-button").addEventListener("click", function () {
+            // Collect data from the forms
+            const basicFormInputs = document.querySelectorAll('#basic-form input');
+            const incomeFormInputs = document.querySelectorAll('#income-form input');
+
+            const data = {
+                basic_questions: Array.from(basicFormInputs).map(input => ({
+                    question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
+                    answer: input.value
+                })),
+                income_questions: Array.from(incomeFormInputs).map(input => ({
+                    question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
+                    answer: input.value
+                }))
+            };
+
+            console.log(data); // For debugging purposes
+
+            fetch("/save-data/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"), // Ensure CSRF token is included
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Data saved successfully!");
+                } else {
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === name + "=") {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 </body>

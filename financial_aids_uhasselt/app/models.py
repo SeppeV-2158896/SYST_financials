@@ -61,7 +61,7 @@ class SupportSystem(models.Model):
     description = models.TextField(null=True, blank=True)
     min_category = models.IntegerField()  # Minimum eligible category
     max_category = models.IntegerField()  # Maximum eligible category
-
+    link = models.TextField(null=True, blank=True)
     def __str__(self):
         return self.name
 

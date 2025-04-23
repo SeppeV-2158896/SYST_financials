@@ -25,9 +25,15 @@
                         <td class="border border-gray-400 px-4 py-2">{{ support.name }}</td>
                         <td class="border border-gray-400 px-4 py-2">
                             {% if support.eligible %}
-                            <button class="bg-green-500 text-white px-2 py-1 rounded">APPLY</button>
+                            <a href="{{ support.link }}" target="_blank" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-blue-600">
+                                APPLY
+                            </a>
                             {% else %}
-                            <button class="bg-red-500 text-white px-2 py-1 rounded">N/A</button>
+                            <button 
+                                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                onclick="showReferenceIncome()">
+                                N/A
+                            </button>
                             {% endif %}
                         </td>
                     </tr>
@@ -41,5 +47,12 @@
             </table>
         </div>
     </div>
+
+    <script>
+        // Function to show reference income and max allowed in an alert
+        function showReferenceIncome(referenceIncome, maxAllowed) {
+            alert(`Your reference income is too high. The maximum allowed can be found here: https://www.uhasselt.be/media/ceodluou/inkomensgrenzen-catergorie%C3%ABn-blad1-4.pdf`);
+        }
+    </script>
 </body>
 </html>

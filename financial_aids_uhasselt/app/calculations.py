@@ -50,7 +50,7 @@ def determine_category(living_unit_points, reference_income):
     try:
         # Find the matching row in the IncomeThreshold table
         threshold = IncomeThreshold.objects.get(punten_leefeenheid=living_unit_points)
-
+        
         # Check if the reference income is within the min and max range
         if threshold.min_inkomensgrens <= reference_income <= threshold.categorie_4:
             # Determine the category
