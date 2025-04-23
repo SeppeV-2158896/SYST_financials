@@ -51,6 +51,8 @@
                 {% endfor %}
             </form>
 
+            <hr class="my-6 border-t-2 border-gray-300">
+
             <!-- Buttons -->
             <div class="flex justify-between mt-6">
                 <button id="save-button" class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
@@ -58,18 +60,19 @@
                     Show Overview
                 </button>
                 <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
+                <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
                     Submit
                 </button>
             </div>
 
-            <!-- Add this button below the forms -->
+            <!-- Add Download and Upload Buttons -->
             <div class="flex justify-between mt-6">
-                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="downloadJSON()">
-                    Download questions and answers
+                <button class="bg-blue-500 text-white py-2 px-4" type="button" onclick="downloadJSON()">
+                    Download Questions and Answers
                 </button>
                 <input type="file" id="upload-json" accept="application/json" class="hidden" onchange="uploadJSON(event)">
-                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="document.getElementById('upload-json').click()">
-                    Upload questions and answers
+                <button class="bg-green-500 text-white py-2 px-4" type="button" onclick="document.getElementById('upload-json').click()">
+                    Upload Questions and Answers
                 </button>
             </div>
         </div>
@@ -110,28 +113,56 @@
             });
         }
 
+        function calculate_income() {
+            const formData = {};
+            const inputs = document.querySelectorAll('#income-form input');
+            inputs.forEach(input => {
+                formData[input.name] = input.value;
+            });
+
+            fetch('/calculate-income/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.redirected) {
+                    // Redirect handled by the server
+                    window.location.href = response.url;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data && data.error) {
+                    alert(`Error: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while calculating income.');
+            });
+        }
+
         function downloadJSON() {
-            // Collect data from the forms
             const basicFormInputs = document.querySelectorAll('#basic-form input');
             const incomeFormInputs = document.querySelectorAll('#income-form input');
             const data = {};
 
-            // Collect basic questions and answers
             data.basic_questions = Array.from(basicFormInputs).map(input => ({
                 question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
                 answer: input.value
             }));
 
-            // Collect income questions and answers
             data.income_questions = Array.from(incomeFormInputs).map(input => ({
                 question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
                 answer: input.value
             }));
 
-            // Convert data to JSON
             const jsonData = JSON.stringify(data, null, 2);
-
-            // Create a blob and trigger download
             const blob = new Blob([jsonData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -150,7 +181,11 @@
                 try {
                     const data = JSON.parse(e.target.result);
 
-                    // Populate basic questions
+                    if (!data.basic_questions || !data.income_questions) {
+                        alert('Invalid JSON structure. Please upload a valid file.');
+                        return;
+                    }
+
                     const basicFormInputs = document.querySelectorAll('#basic-form input');
                     data.basic_questions.forEach((item, index) => {
                         if (basicFormInputs[index]) {
@@ -158,7 +193,6 @@
                         }
                     });
 
-                    // Populate income questions
                     const incomeFormInputs = document.querySelectorAll('#income-form input');
                     data.income_questions.forEach((item, index) => {
                         if (incomeFormInputs[index]) {
