@@ -64,8 +64,12 @@
 
             <!-- Add this button below the forms -->
             <div class="flex justify-between mt-6">
-                <button class="bg-blue-500 text-white py-2 px-4" type="button" onclick="downloadJSON()">
-                    Download Questions and Answers
+                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="downloadJSON()">
+                    Download questions and answers
+                </button>
+                <input type="file" id="upload-json" accept="application/json" class="hidden" onchange="uploadJSON(event)">
+                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="document.getElementById('upload-json').click()">
+                    Upload questions and answers
                 </button>
             </div>
         </div>
@@ -101,6 +105,38 @@
             a.download = 'questions_and_answers.json';
             a.click();
             URL.revokeObjectURL(url);
+        }
+
+        function uploadJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+
+                    // Populate basic questions
+                    const basicFormInputs = document.querySelectorAll('#basic-form input');
+                    data.basic_questions.forEach((item, index) => {
+                        if (basicFormInputs[index]) {
+                            basicFormInputs[index].value = item.answer || '';
+                        }
+                    });
+
+                    // Populate income questions
+                    const incomeFormInputs = document.querySelectorAll('#income-form input');
+                    data.income_questions.forEach((item, index) => {
+                        if (incomeFormInputs[index]) {
+                            incomeFormInputs[index].value = item.answer || '';
+                        }
+                    });
+                } catch (error) {
+                    alert('Invalid JSON file. Please upload a valid file.');
+                }
+            };
+
+            reader.readAsText(file);
         }
     </script>
 </body>
