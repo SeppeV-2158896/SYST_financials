@@ -34,6 +34,12 @@ def index(request):
     return render(request, 'index.html', context)
 
 def simulate(request):
+    # Check if the user is continuing as a guest
+    if 'guest' in request.GET:
+        # Clear the email session variable for guest users
+        if 'email' in request.session:
+            del request.session['email']
+
     user_email = request.session.get('email')
 
     if not user_email and 'guest' not in request.GET:
@@ -52,6 +58,7 @@ def simulate(request):
     context = {
         'username': username,
         'header': header,
+        'user_email': user_email,  # Pass user_email to the template
         'basic_questions': Question.objects.filter(text__in=[
             "Email address", "Faculty of student", "Amount of ECTS this year", "Domicile"
         ]),
