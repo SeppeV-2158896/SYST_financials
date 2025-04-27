@@ -55,26 +55,30 @@
 
             <hr class="my-6 border-t-2 border-gray-300">
 
-            <!-- Buttons -->
+            <!-- Buttons Section -->
             <div class="flex justify-between mt-6">
-                <button class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
-                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
-                    Show Overview
-                </button>
-                <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
-                    Submit
-                </button>
-            </div>
-
-            <!-- Add Download and Upload Buttons -->
-            <div class="flex justify-between mt-6">
-                <button class="bg-blue-500 text-white py-2 px-4" type="button" onclick="downloadJSON()">
-                    Download Questions and Answers
-                </button>
-                <input type="file" id="upload-json" accept="application/json" class="hidden" onchange="uploadJSON(event)">
-                <button class="bg-green-500 text-white py-2 px-4" type="button" onclick="document.getElementById('upload-json').click()">
-                    Upload Questions and Answers
-                </button>
+                {% if user_email %}
+                    <!-- Logged-in user: Show Save, Submit, and Overview buttons -->
+                    <button class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
+                    <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
+                        Show Overview
+                    </button>
+                    <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
+                        Submit
+                    </button>
+                {% else %}
+                    <!-- Guest: Show Download, Upload, and Submit buttons -->
+                    <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="downloadJSON()">
+                        Download Questions and Answers
+                    </button>
+                    <input type="file" id="upload-json" accept="application/json" class="hidden" onchange="uploadJSON(event)">
+                    <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="document.getElementById('upload-json').click()">
+                        Upload Questions and Answers
+                    </button>
+                    <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
+                        Submit
+                    </button>
+                {% endif %}
             </div>
         </div>
     </div>
