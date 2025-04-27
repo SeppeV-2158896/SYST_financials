@@ -34,13 +34,13 @@
             </form>
             <div>
                 <form id="yes_no-form" class="space-y-4 mt-2">
-
                     {% for question in yes_no_questions %}
                     <div>
                         <label class="block text-gray-700 font-medium mb-1" for="yes_no_question{{ forloop.counter }}">
                             {{ question.text }}
                         </label>
-                        <select class="w-full p-2 border border-gray-300" id="yes_no_question{{ forloop.counter }}" name="{{ question.tag }}">
+                        <select class="w-full p-2 border border-gray-300" id="yes_no_question{{ forloop.counter }}" name="{{ question.tag }}" 
+                                {% if user_email %}disabled{% endif %}>
                             <option value="" {% if question.answer == "" %}selected{% endif %}>Select an option</option>
                             <option value="yes" {% if question.answer == "yes" %}selected{% endif %}>Yes</option>
                             <option value="no" {% if question.answer == "no" %}selected{% endif %}>No</option>
