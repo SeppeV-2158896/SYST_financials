@@ -4,7 +4,7 @@ from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
-from app.models import FinancialSupport, Question, SupportSystem
+from app.models import FinancialSupport, Question, SupportSystem 
 from .calculations import calculate_reference_income, determine_category
 from django.contrib.auth.hashers import check_password
 from app.models import UserProfile
@@ -69,6 +69,18 @@ def simulate(request):
             "Email address", "Faculty of student", "Amount of ECTS this year",
             "Domicile", "Are you staying in a student room?", "Have you bought your laptop through the university?"
         ]),
+        'yes_no_questions': [
+            {
+                'text': "Are you staying in a student room?",
+                'tag': "student_room",
+                'answer': user.student_room if user else ""
+            },
+            {
+                'text': "Have you bought your laptop through the university?",
+                'tag': "laptop_purchased",
+                'answer': user.laptop_purchased if user else ""
+            }
+        ],
         # Prefill user data
         'email': user.email if user else '',
         'faculty': user.faculty if user else '',
@@ -169,6 +181,7 @@ def calculate_income_view(request):
 def save_user_data(request):
     if request.method == "POST":
         try:
+            import json
             data = json.loads(request.body)  # Parse JSON payload
 
             # Extract the email address from the basic_questions
@@ -196,6 +209,12 @@ def save_user_data(request):
                 (item["answer"] for item in data.get("basic_questions", []) if item["question"] == "Domicile"), 
                 user_profile.domicile
             )
+            # Save yes/no questions
+            for question in data.get("yes_no_questions", []):
+                if question["question"] == "Are you staying in a student room?":
+                    user_profile.student_room = question["answer"]
+                elif question["question"] == "Have you bought your laptop through the university?":
+                    user_profile.laptop_purchased = question["answer"]
 
             # Update income questions
             user_profile.annual_family_income = next(

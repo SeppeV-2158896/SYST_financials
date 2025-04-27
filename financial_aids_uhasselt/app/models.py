@@ -36,6 +36,9 @@ class UserProfile(models.Model):
     foreign_incomes = models.DecimalField(max_digits=12, decimal_places=2)
 
     study_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    
+    student_room = models.CharField(max_length=3, choices=[('yes', 'Yes'), ('no', 'No')], blank=True, null=True)
+    laptop_purchased = models.CharField(max_length=3, choices=[('yes', 'Yes'), ('no', 'No')], blank=True, null=True)
 
     def __str__(self):
         return self.email

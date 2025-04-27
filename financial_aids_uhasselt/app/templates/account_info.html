@@ -32,7 +32,23 @@
                 </div>
                 {% endfor %}
             </form>
+            <div>
+                <form id="yes_no-form" class="space-y-4 mt-2">
 
+                    {% for question in yes_no_questions %}
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1" for="yes_no_question{{ forloop.counter }}">
+                            {{ question.text }}
+                        </label>
+                        <select class="w-full p-2 border border-gray-300" id="yes_no_question{{ forloop.counter }}" name="{{ question.tag }}">
+                            <option value="" {% if question.answer == "" %}selected{% endif %}>Select an option</option>
+                            <option value="yes" {% if question.answer == "yes" %}selected{% endif %}>Yes</option>
+                            <option value="no" {% if question.answer == "no" %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                    {% endfor %}
+                </form>
+            </div>
             <hr class="my-6 border-t-2 border-gray-300">
 
             <!-- Income Questions Section -->
@@ -179,8 +195,8 @@
         }
 
         document.getElementById("save-button").addEventListener("click", function () {
-            // Collect data from the forms
             const basicFormInputs = document.querySelectorAll('#basic-form input');
+            const yesNoFormInputs = document.querySelectorAll('#yes_no-form select');
             const incomeFormInputs = document.querySelectorAll('#income-form input');
 
             const data = {
@@ -188,11 +204,17 @@
                     question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
                     answer: input.value || ""
                 })),
+                yes_no_questions: Array.from(yesNoFormInputs).map(select => ({
+                    question: select.previousElementSibling ? select.previousElementSibling.textContent.trim() : "Unknown",
+                    answer: select.value || ""
+                })),
                 income_questions: Array.from(incomeFormInputs).map(input => ({
                     question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
                     answer: input.value || "0" // Default to "0" for numeric fields
                 }))
             };
+
+            console.log("Data being sent to backend:", data); // Debug: Log the data
 
             fetch("/save-data/", {
                 method: "POST",
@@ -213,7 +235,6 @@
             .catch(error => console.error("Error:", error));
         });
 
-        // Helper function to get CSRF token
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== "") {
