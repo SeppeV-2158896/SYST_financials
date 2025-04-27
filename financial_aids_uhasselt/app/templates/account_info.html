@@ -59,7 +59,7 @@
             <div class="flex justify-between mt-6">
                 {% if user_email %}
                     <!-- Logged-in user: Show Save, Submit, and Overview buttons -->
-                    <button class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
+                    <button id="save-button" class="bg-red-500 text-white py-2 px-4" type="button">Save</button>
                     <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="window.location.href='{% url 'financial_overview' %}';">
                         Show Overview
                     </button>
@@ -176,6 +176,57 @@
             };
 
             reader.readAsText(file);
+        }
+
+        document.getElementById("save-button").addEventListener("click", function () {
+            // Collect data from the forms
+            const basicFormInputs = document.querySelectorAll('#basic-form input');
+            const incomeFormInputs = document.querySelectorAll('#income-form input');
+
+            const data = {
+                basic_questions: Array.from(basicFormInputs).map(input => ({
+                    question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
+                    answer: input.value || ""
+                })),
+                income_questions: Array.from(incomeFormInputs).map(input => ({
+                    question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
+                    answer: input.value || "0" // Default to "0" for numeric fields
+                }))
+            };
+
+            fetch("/save-data/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"), // Ensure CSRF token is included
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Data saved successfully!");
+                } else {
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === name + "=") {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 </body>

@@ -4,7 +4,7 @@ from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
-from app.models import FinancialSupport, Question, SupportSystem  # Replace with your actual model
+from app.models import FinancialSupport, Question, SupportSystem
 from .calculations import calculate_reference_income, determine_category
 from django.contrib.auth.hashers import check_password
 from app.models import UserProfile
@@ -169,7 +169,6 @@ def calculate_income_view(request):
 def save_user_data(request):
     if request.method == "POST":
         try:
-            import json
             data = json.loads(request.body)  # Parse JSON payload
 
             # Extract the email address from the basic_questions
