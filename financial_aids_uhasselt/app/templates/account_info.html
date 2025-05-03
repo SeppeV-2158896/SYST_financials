@@ -23,6 +23,8 @@
                 <div>
                     <label class="block text-gray-700" for="basic_question{{ forloop.counter }}">
                         {{ question.text }}
+                        <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
+                           title="{% if question.text == 'Email address' %}Your university email address (if applicable). If not, fill in None.{% elif question.text == 'Faculty of student' %}The faculty you are enrolled in e.g. Law, Engineering.{% elif question.text == 'Amount of ECTS this year' %}The total ECTS credits you are taking this year or would like to take if you logged in as a guest.{% elif question.text == 'Domicile' %}The official place where you live.{% endif %}"></i>
                     </label>
                     <input class="w-full p-2 border border-gray-300 {% if user_email %}bg-gray-100{% endif %}" 
                            id="basic_question{{ forloop.counter }}" 
@@ -38,6 +40,8 @@
                     <div>
                         <label class="block text-gray-700 font-medium mb-1" for="yes_no_question{{ forloop.counter }}">
                             {{ question.text }}
+                            <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
+                               title="{% if question.text == 'Are you staying in a student room?' %}Select 'Yes' if you live in a student dormitory. If this is not the case, select 'No'{% elif question.text == 'Have you bought your laptop through the university?' %}Select 'Yes' if you purchased your laptop via the university program, if not select 'No'{% endif %}"></i>
                         </label>
                         <select class="w-full p-2 border border-gray-300" id="yes_no_question{{ forloop.counter }}" name="{{ question.tag }}" 
                                 {% if user_email %}disabled{% endif %}>
@@ -61,9 +65,11 @@
                 <div>
                     <label class="block text-gray-700" for="income_question{{ forloop.counter }}">
                         {{ question.text }}
+                        <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
+                           title="{% if question.text == 'Living unit points' %}Points assigned to your living unit.{% elif question.text == 'Annual family income' %}Your family's total yearly net income.{% elif question.text == 'Cadastral income (rental)' %}Income from rental properties e.g. a house you rent.{% elif question.text == 'Cadastral income (business)' %}Income from business properties.{% elif question.text == 'Separable taxable incomes' %}Taxable incomes that can be separated, such as investment income or bonuses and tips.{% elif question.text == 'Alimentation money' %}Money received for alimentation (if applicable).{% elif question.text == 'Living wages' %}Earned wages if applicable.{% elif question.text == 'Income replacement allowance' %}Income you can receive if you have a handicap that limits your abilities to work.{% elif question.text == 'Foreign incomes' %}Income earned from foreign sources.{% elif question.text == 'Study income' %}Income earned while studying.{% endif %}"></i>
                     </label>
                     <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" 
-                           name="{{ question.tag}}" type="text"
+                           name="{{ question.tag }}" type="text"
                            value="{% if question.text == 'Living unit points' %}{{ living_unit_points }}{% elif question.text == 'Annual family income' %}{{ annual_family_income }}{% elif question.text == 'Cadastral income (rental)' %}{{ cadastral_income_rental }}{% elif question.text == 'Cadastral income (business)' %}{{ cadastral_income_business }}{% elif question.text == 'Separable taxable incomes' %}{{ separable_taxable_incomes }}{% elif question.text == 'Alimentation money' %}{{ alimentation_money }}{% elif question.text == 'Living wages' %}{{ living_wages }}{% elif question.text == 'Income replacement allowance' %}{{ income_replacement_allowance }}{% elif question.text == 'Foreign incomes' %}{{ foreign_incomes }}{% elif question.text == 'Study income' %}{{ study_income }}{% endif %}">
                 </div>
                 {% endfor %}
@@ -194,46 +200,49 @@
             reader.readAsText(file);
         }
 
-        document.getElementById("save-button").addEventListener("click", function () {
-            const basicFormInputs = document.querySelectorAll('#basic-form input');
-            const yesNoFormInputs = document.querySelectorAll('#yes_no-form select');
-            const incomeFormInputs = document.querySelectorAll('#income-form input');
+        const saveButton = document.getElementById("save-button");
+        if (saveButton) {
+            saveButton.addEventListener("click", function () {
+                const basicFormInputs = document.querySelectorAll('#basic-form input');
+                const yesNoFormInputs = document.querySelectorAll('#yes_no-form select');
+                const incomeFormInputs = document.querySelectorAll('#income-form input');
 
-            const data = {
-                basic_questions: Array.from(basicFormInputs).map(input => ({
-                    question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
-                    answer: input.value || ""
-                })),
-                yes_no_questions: Array.from(yesNoFormInputs).map(select => ({
-                    question: select.previousElementSibling ? select.previousElementSibling.textContent.trim() : "Unknown",
-                    answer: select.value || ""
-                })),
-                income_questions: Array.from(incomeFormInputs).map(input => ({
-                    question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
-                    answer: input.value || "0" // Default to "0" for numeric fields
-                }))
-            };
+                const data = {
+                    basic_questions: Array.from(basicFormInputs).map(input => ({
+                        question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
+                        answer: input.value || ""
+                    })),
+                    yes_no_questions: Array.from(yesNoFormInputs).map(select => ({
+                        question: select.previousElementSibling ? select.previousElementSibling.textContent.trim() : "Unknown",
+                        answer: select.value || ""
+                    })),
+                    income_questions: Array.from(incomeFormInputs).map(input => ({
+                        question: input.previousElementSibling ? input.previousElementSibling.textContent.trim() : "Unknown",
+                        answer: input.value || "0" // Default to "0" for numeric fields
+                    }))
+                };
 
-            console.log("Data being sent to backend:", data); // Debug: Log the data
+                console.log("Data being sent to backend:", data); // Debug: Log the data
 
-            fetch("/save-data/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken"), // Ensure CSRF token is included
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Data saved successfully!");
-                } else {
-                    alert("Error: " + data.error);
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        });
+                fetch("/save-data/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken"), // Ensure CSRF token is included
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Data saved successfully!");
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            });
+        }
 
         function getCookie(name) {
             let cookieValue = null;
