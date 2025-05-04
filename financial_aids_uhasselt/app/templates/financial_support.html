@@ -22,7 +22,24 @@
                 <tbody>
                     {% for support in supports %}
                     <tr>
-                        <td class="border border-gray-400 px-4 py-2">{{ support.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            {{ support.name }}
+                            <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
+                               title="{% if support.name == 'Flemish Support' %}
+                                          This aid is for Flemish students and covers tuition fees and other expenses. 
+                                          It can be received per year and the amount depends on the amount of credits you take.
+                                      {% elif support.name == 'UHasselt Support 1' %}
+                                          This aid is for students with the lowest income. A student can receive aid based on his living unit points.
+                                      {% elif support.name == 'UHasselt Support 2' %}
+                                          This aid is for students that can receive aid based on his living unit points, but less since the student does have some income but not enough.
+                                      {% elif support.name == 'UHasselt Support 3' %}
+                                          This aid is for students in Category 3 with moderate income.
+                                      {% elif support.name == 'UHasselt Support 4' %}
+                                          This aid is for students in Category 4 with higher income.
+                                      {% else %}
+                                          {{ support.description }}
+                                      {% endif %}"></i>
+                        </td>
                         <td class="border border-gray-400 px-4 py-2">
                             {% if support.eligible %}
                             <a href="{{ support.link }}" target="_blank" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-blue-600">
