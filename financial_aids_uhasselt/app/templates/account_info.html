@@ -14,13 +14,12 @@
         <div class="w-full max-w-6xl bg-white shadow-md p-6">
 
             {% if not user_email %}
-            <!-- Upload Button for Guests -->
-            <div class="mb-6">
-                <input type="file" id="upload-json" accept="application/json" class="hidden" onchange="uploadJSON(event)">
-                <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="document.getElementById('upload-json').click()">
-                    Upload Form with answers to fill the form
-                </button>
-            </div>
+                <div class="mb-6">
+                    <input type="file" id="upload-json" accept="application/json" class="hidden" onchange="uploadJSON(event)">
+                    <button class="bg-red-500 text-white py-2 px-4" type="button" onclick="document.getElementById('upload-json').click()">
+                        Upload a downloaded JSON file to prefill the form
+                    </button>
+                </div>
             {% endif %}
 
             <p class="text-lg font-semibold">Basic Information</p>
@@ -37,7 +36,9 @@
                            title="{% if question.text == 'Email address' %}Your university email address (if applicable). If not, fill in None.{% elif question.text == 'Faculty of student' %}The faculty you are enrolled in e.g. Law, Engineering.{% elif question.text == 'Amount of ECTS this year' %}The total ECTS credits you are taking this year or would like to take if you logged in as a guest.{% elif question.text == 'Domicile' %}The official place where you live.{% endif %}"></i>
                     </label>
                     {% if question.text == 'Faculty of student' %}
-                    <select class="w-full p-2 border border-gray-300" id="basic_question{{ forloop.counter }}" name="basic_question{{ forloop.counter }}" {% if user_email %}disabled{% endif %}>
+                    <select class="w-full p-2 border border-gray-300 {% if user_email %}bg-gray-100{% else %}bg-white{% endif %}" 
+                            id="basic_question{{ forloop.counter }}" 
+                            name="basic_question{{ forloop.counter }}" {% if user_email %}disabled{% endif %}>
                         <option value="" {% if not faculty %}selected{% endif %}>Select your faculty</option>
                         <option value="Law" {% if faculty == 'Law' %}selected{% endif %}>Law</option>
                         <option value="Engineering" {% if faculty == 'Engineering' %}selected{% endif %}>Engineering</option>
@@ -63,9 +64,10 @@
                             <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
                                title="{% if question.text == 'Are you staying in a student room?' %}Select 'Yes' if you live in a student dormitory. If this is not the case, select 'No'{% elif question.text == 'Have you bought your laptop through the university?' %}Select 'Yes' if you purchased your laptop via the university program, if not select 'No'{% endif %}"></i>
                         </label>
-                        <select class="w-full p-2 border border-gray-300" id="yes_no_question{{ forloop.counter }}" name="{{ question.tag }}" 
-                                {% if user_email %}disabled{% endif %}>
-                            <option value="" {% if question.answer == "" %}selected{% endif %}>Select an option</option>
+                        <select class="w-full p-2 border border-gray-300 {% if user_email %}bg-gray-100{% else %}bg-white{% endif %}" 
+                                id="yes_no_question{{ forloop.counter }}" 
+                                name="{{ question.text }}" 
+                                value="yes" {% if user_email %}disabled{% endif %}>
                             <option value="yes" {% if question.answer == "yes" %}selected{% endif %}>Yes</option>
                             <option value="no" {% if question.answer == "no" %}selected{% endif %}>No</option>
                         </select>
@@ -86,7 +88,7 @@
                     <label class="block text-gray-700" for="income_question{{ forloop.counter }}">
                         {{ question.text }}
                         <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
-                           title="{% if question.text == 'Living unit points' %}Points assigned to your living unit.{% elif question.text == 'Annual family income' %}Your family's total yearly net income.{% elif question.text == 'Cadastral income (rental)' %}Income from rental properties e.g. a house you rent.{% elif question.text == 'Cadastral income (business)' %}Income from business properties.{% elif question.text == 'Separable taxable incomes' %}Taxable incomes that can be separated, such as investment income or bonuses and tips.{% elif question.text == 'Alimentation money' %}Money received for alimentation (if applicable).{% elif question.text == 'Living wages' %}Earned wages if applicable.{% elif question.text == 'Income replacement allowance' %}Income you can receive if you have a handicap that limits your abilities to work.{% elif question.text == 'Foreign incomes' %}Income earned from foreign sources.{% elif question.text == 'Study income' %}Income earned while studying.{% endif %}"></i>
+                           title="{% if question.text == 'Living unit points' %}Points assigned to your living unit, used to calculate eligibility for financial aid.{% elif question.text == 'Annual family income' %}The total net income of your family for the year.{% elif question.text == 'Cadastral income (rental)' %}Income derived from renting out properties.{% elif question.text == 'Cadastral income (business)' %}Income derived from business properties.{% elif question.text == 'Separable taxable incomes' %}Taxable incomes that can be separated, such as investment income or bonuses.{% elif question.text == 'Alimentation money' %}Money received for child support or similar purposes.{% elif question.text == 'Living wages' %}Income earned from wages or salaries.{% elif question.text == 'Income replacement allowance' %}Allowance received if you are unable to work due to a disability.{% elif question.text == 'Foreign incomes' %}Income earned from foreign sources.{% elif question.text == 'Study income' %}Income earned while studying, such as scholarships or part-time jobs.{% endif %}"></i>
                     </label>
                     <input class="w-full p-2 border border-gray-300" id="income_question{{ forloop.counter }}" 
                            name="{{ question.tag }}" type="text"
@@ -114,7 +116,7 @@
                         Download Filled-in Form
                     </button>
                     <button class="bg-red-500 text-white py-2 px-4" type="button" id="submit-button" onclick="calculate_income()">
-                        Submit
+                        Simulate
                     </button>
                 {% endif %}
             </div>

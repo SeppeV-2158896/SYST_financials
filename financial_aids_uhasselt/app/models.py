@@ -65,6 +65,7 @@ class SupportSystem(models.Model):
     min_category = models.IntegerField()  # Minimum eligible category
     max_category = models.IntegerField()  # Maximum eligible category
     link = models.TextField(null=True, blank=True)
+    percentage_covered = models.IntegerField(default=0)  # Percentage of costs covered
     def __str__(self):
         return self.name
 

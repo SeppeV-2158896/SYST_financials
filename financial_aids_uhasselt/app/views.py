@@ -45,9 +45,6 @@ def simulate(request):
     if not user_email and 'guest' not in request.GET:
         return redirect('index')
 
-    header = f"Welcome {user_email}" if user_email else "Financial Simulation"
-    username = user_email if user_email else "Guest"
-
     user = None
     if user_email:
         try:
@@ -55,6 +52,9 @@ def simulate(request):
         except UserProfile.DoesNotExist:
             user = None
 
+    username = user_email.split('@')[0].capitalize() if user_email else "Guest"
+    header = f"Welcome {username}" if user_email else "Financial Simulation"
+    
     context = {
         'username': username,
         'header': header,
@@ -149,23 +149,33 @@ def calculate_income_view(request):
             result = calculate_reference_income(data)
             
             if "reference_income" in result:
-                # Determine the category
+                # Determine the category and max income thresholds
                 living_unit_points = float(data.get("living_unit_points", 0) or 0.0)
                 reference_income = result["reference_income"]
-                category = determine_category(living_unit_points, reference_income)
-                result["category"] = category
+                category_data = determine_category(living_unit_points, reference_income)
+
+                if not category_data:
+                    raise Exception("Unable to determine category based on the provided data.")
+
+                category = category_data["category"]
+                max_income_thresholds = category_data["max_income_thresholds"]
 
                 # Fetch all support systems
                 all_supports = SupportSystem.objects.all()
-                supports = [
-                    {
+
+                supports = []
+                for support in all_supports:
+                    max_category = support.max_category
+                    max_allowed_income = max_income_thresholds.get(f"categorie_{max_category}", "Unknown")
+                    supports.append({
                         "name": support.name,
                         "description": support.description,
                         "eligible": support.min_category <= category <= support.max_category,
                         "link": support.link,
-                    }
-                    for support in all_supports
-                ]
+                        "percentage_covered": support.percentage_covered,
+                        "reference_income": float(reference_income),  # Convert Decimal to float
+                        "max_allowed_income": float(max_allowed_income) if max_allowed_income != "Unknown" else "Unknown",
+                    })
 
                 # Redirect to financial_support with supports as query parameters
                 query_params = urlencode({'supports': json.dumps(supports)})

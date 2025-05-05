@@ -45,7 +45,7 @@ def determine_category(living_unit_points, reference_income):
 
     :param living_unit_points: The living unit points to look up.
     :param reference_income: The calculated reference income.
-    :return: The category (1, 2, 3, or 4) or None if no match is found.
+    :return: A dictionary containing the category and max income thresholds.
     """
     try:
         # Find the matching row in the IncomeThreshold table
@@ -55,15 +55,26 @@ def determine_category(living_unit_points, reference_income):
         if threshold.min_inkomensgrens <= reference_income <= threshold.categorie_4:
             # Determine the category
             if reference_income <= threshold.categorie_1:
-                return 1
+                category = 1
             elif reference_income <= threshold.categorie_2:
-                return 2
+                category = 2
             elif reference_income <= threshold.categorie_3:
-                return 3
-            elif reference_income <= threshold.max_inkomensgrens:
-                return 0
+                category = 3
             elif reference_income <= threshold.categorie_4:
-                return 4
+                category = 4
+            else:
+                category = None
+
+            # Return the category and max income thresholds
+            return {
+                "category": category,
+                "max_income_thresholds": {
+                    "categorie_1": threshold.categorie_1,
+                    "categorie_2": threshold.categorie_2,
+                    "categorie_3": threshold.categorie_3,
+                    "categorie_4": threshold.categorie_4,
+                }
+            }
         return None  # No matching category
     except IncomeThreshold.DoesNotExist:
         return None  # No matching row found

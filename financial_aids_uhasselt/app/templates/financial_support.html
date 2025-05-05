@@ -16,6 +16,7 @@
                 <thead>
                     <tr>
                         <th class="border border-gray-400 px-4 py-2 text-left">Financial Aids</th>
+                        <th class="border border-gray-400 px-4 py-2 text-left">Description</th>
                         <th class="border border-gray-400 px-4 py-2 text-left">Eligibility</th>
                     </tr>
                 </thead>
@@ -24,40 +25,44 @@
                     <tr>
                         <td class="border border-gray-400 px-4 py-2">
                             {{ support.name }}
-                            <i class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer hover:text-blue-500"
-                               title="{% if support.name == 'Flemish Support' %}
-                                          This aid is for Flemish students and covers tuition fees and other expenses. 
-                                          It can be received per year and the amount depends on the amount of credits you take.
-                                      {% elif support.name == 'UHasselt Support 1' %}
-                                          This aid is for students with the lowest income. A student can receive aid based on his living unit points.
-                                      {% elif support.name == 'UHasselt Support 2' %}
-                                          This aid is for students that can receive aid based on his living unit points, but less since the student does have some income but not enough.
-                                      {% elif support.name == 'UHasselt Support 3' %}
-                                          This aid is for students in Category 3 with moderate income.
-                                      {% elif support.name == 'UHasselt Support 4' %}
-                                          This aid is for students in Category 4 with higher income.
-                                      {% else %}
-                                          {{ support.description }}
-                                      {% endif %}"></i>
                         </td>
                         <td class="border border-gray-400 px-4 py-2">
                             {% if support.eligible %}
-                            <a href="{{ support.link }}" target="_blank" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-blue-600">
-                                APPLY
-                            </a>
+                            <div>
+                                <p class="text-green-600 mt-2">
+                                    This support covers {{ support.percentage_covered }}% of your study-cost minus your study-income.
+                                </p>
+                            </div>
                             {% else %}
-                            <button 
-                                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                onclick="showReferenceIncome()">
-                                N/A
-                            </button>
+                            <div>
+                                <p class="text-red-600 mt-2">
+                                    The maximum income is {{ support.max_allowed_income }} but your reference income is {{ support.reference_income }}.
+                                </p>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            {% if support.eligible %}
+                            <div>
+                                <a href="{{ support.link }}" target="_blank" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-blue-600">
+                                    APPLY
+                                </a>
+                            </div>
+                            {% else %}
+                            <div>
+                                <button 
+                                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    onclick="showReferenceIncome({{ support.reference_income }}, {{ support.max_allowed_income }})">
+                                    N/A
+                                </button>
+                            </div>
                             {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
                     {% if error %}
                     <tr>
-                        <td colspan="2" class="border border-gray-400 px-4 py-2 text-red-500">{{ error }}</td>
+                        <td colspan="3" class="border border-gray-400 px-4 py-2 text-red-500">{{ error }}</td>
                     </tr>
                     {% endif %}
                 </tbody>
