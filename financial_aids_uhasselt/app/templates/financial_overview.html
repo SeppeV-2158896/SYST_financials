@@ -101,12 +101,12 @@
                         {
                             label: 'Total Income (€)',
                             data: {{ graph_income|safe }}, // Total income for each year
-                            backgroundColor: 'green',
+                            backgroundColor: ctx.createPattern(createCanvasPattern('dotted', 'green'), 'repeat'),
                         },
                         {
                             label: 'Total Expenses (€)',
                             data: {{ graph_expenses|safe }}, // Total expenses for each year
-                            backgroundColor: 'red',
+                            backgroundColor: ctx.createPattern(createCanvasPattern('cross', 'red'), 'repeat'),
                         }
                     ]
                 },
@@ -120,6 +120,31 @@
                 }
             });
 
+            function createCanvasPattern(type, color) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 10;
+                canvas.height = 10;
+                const context = canvas.getContext('2d');
+                context.fillStyle = color;
+
+                if (type === 'dotted') {
+                    context.beginPath();
+                    context.arc(5, 5, 2, 0, 2 * Math.PI);
+                    context.fill();
+                } else if (type === 'cross') {
+                    context.beginPath();
+                    context.moveTo(0, 0);
+                    context.lineTo(10, 10);
+                    context.moveTo(10, 0);
+                    context.lineTo(0, 10);
+                    context.strokeStyle = color;
+                    context.lineWidth = 2;
+                    context.stroke();
+                }
+
+                return canvas;
+            }
+
             // Debugging logs
             console.log("Labels:", {{ graph_labels|safe }});
             console.log("Income Data:", {{ graph_income|safe }});
@@ -128,3 +153,4 @@
     </script>
 </body>
 </html>
+`
